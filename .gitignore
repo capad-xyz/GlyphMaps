@@ -1,0 +1,31 @@
+# IDE / OS
+*.iml
+.idea/
+.DS_Store
+.vscode/
+
+# Gradle / Kotlin build caches
+.gradle/
+.kotlin/
+build/
+captures/
+.externalNativeBuild/
+.cxx/
+
+# Output binaries (rebuildable)
+*.apk
+*.aab
+
+# Local machine config — never commit
+/local.properties
+
+# Release signing — NEVER commit keystores or their passwords
+/keystore.properties
+*.jks
+*.keystore
+
+# Claude Code per-project session data
+.claude/
+
+# Earlier scratch clone of the upstream example project
+/_scratch/

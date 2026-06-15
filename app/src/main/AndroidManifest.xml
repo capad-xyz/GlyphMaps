@@ -1,0 +1,88 @@
+<?xml version="1.0" encoding="utf-8"?>
+<manifest xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools">
+
+    <!-- Glyph Matrix access (required by the Nothing SDK). -->
+    <uses-permission android:name="com.nothing.ketchum.permission.ENABLE" />
+
+    <!-- Foreground service is what keeps the Glyph Matrix connection alive
+         while we render frames in response to nav updates. -->
+    <uses-permission android:name="android.permission.FOREGROUND_SERVICE" />
+    <uses-permission android:name="android.permission.FOREGROUND_SERVICE_SPECIAL_USE" />
+    <uses-permission android:name="android.permission.POST_NOTIFICATIONS" />
+
+    <!-- Lets us read Google Maps' Live Updates / nav notifications.
+         The system also requires the user to grant Notification Access in Settings. -->
+    <uses-permission android:name="android.permission.BIND_NOTIFICATION_LISTENER_SERVICE"
+        tools:ignore="ProtectedPermissions" />
+
+    <!-- NOTE: deliberately no REQUEST_IGNORE_BATTERY_OPTIMIZATIONS. The
+         foreground service keeps the matrix updating during a route, and the
+         notification listener rebinds itself, so the exemption buys nothing —
+         and Google Play scrutinises that permission heavily. -->
+
+    <application
+        android:allowBackup="false"
+        android:icon="@mipmap/ic_launcher"
+        android:label="@string/app_name"
+        android:roundIcon="@mipmap/ic_launcher_round"
+        android:supportsRtl="true"
+        android:theme="@style/Theme.GlyphNavToy">
+
+        <!-- Nothing API key placeholder — example project uses "test". Keep matching. -->
+        <meta-data
+            android:name="NothingKey"
+            android:value="test" />
+
+        <activity
+            android:name=".MainActivity"
+            android:exported="true"
+            android:theme="@style/Theme.GlyphNavToy">
+            <intent-filter>
+                <action android:name="android.intent.action.MAIN" />
+                <category android:name="android.intent.category.LAUNCHER" />
+            </intent-filter>
+        </activity>
+
+        <!-- Foreground service: owns the GlyphMatrixManager connection and pushes
+             frames via setAppMatrixFrame(). Stays alive across nav updates. -->
+        <service
+            android:name=".service.GlyphRenderService"
+            android:exported="false"
+            android:foregroundServiceType="specialUse">
+            <property
+                android:name="android.app.PROPERTY_SPECIAL_USE_FGS_SUBTYPE"
+                android:value="Drives the Nothing Glyph Matrix in response to active navigation notifications." />
+        </service>
+
+        <!-- Notification listener: reads Maps Live Updates / nav notifications.
+             User must grant Notification Access in Settings before this fires. -->
+        <service
+            android:name=".service.MapsNotificationListener"
+            android:exported="true"
+            android:permission="android.permission.BIND_NOTIFICATION_LISTENER_SERVICE">
+            <intent-filter>
+                <action android:name="android.service.notification.NotificationListenerService" />
+            </intent-filter>
+        </service>
+
+        <!-- Lets the CapturesCard share button hand capture files to other apps
+             (Mail, Drive, Signal, etc.) — required since Android N forbids
+             file:// uris across apps. -->
+        <provider
+            android:name="androidx.core.content.FileProvider"
+            android:authorities="${applicationId}.fileprovider"
+            android:exported="false"
+            android:grantUriPermissions="true">
+            <meta-data
+                android:name="android.support.FILE_PROVIDER_PATHS"
+                android:resource="@xml/file_paths" />
+        </provider>
+
+        <!-- NOTE: deliberately no `com.nothing.glyph.TOY` services. This app drives
+             the matrix as a regular foreground app via setAppMatrixFrame(), not as
+             a Glyph Toy (Toys on 4a Pro are AOD-only / 1-min cadence). -->
+
+    </application>
+
+</manifest>

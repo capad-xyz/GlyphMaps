@@ -1,0 +1,6 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <!-- Dev flavor overrides the display name so it's distinguishable from the
+         user build when both are installed side by side. -->
+    <string name="app_name">Glyph Maps Dev</string>
+</resources>

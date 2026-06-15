@@ -1,0 +1,6 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <!-- Dev icon gets a dark-red background tint so it's visually distinct
+         from the user build's near-black icon on the home screen. -->
+    <color name="ic_launcher_background">#1A0A0A</color>
+</resources>

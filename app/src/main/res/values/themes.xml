@@ -1,0 +1,8 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <!-- Base theme for the activity. Compose handles everything inside the
+         activity itself, so this is just a thin parent. -->
+    <style name="Theme.GlyphNavToy" parent="android:Theme.DeviceDefault.NoActionBar">
+        <item name="android:windowBackground">@android:color/black</item>
+    </style>
+</resources>

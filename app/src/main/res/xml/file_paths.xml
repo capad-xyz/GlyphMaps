@@ -1,0 +1,6 @@
+<?xml version="1.0" encoding="utf-8"?>
+<paths>
+    <!-- Maps to the same dir CaptureWriter writes to:
+         getExternalFilesDir(null) → "external-files" root in FileProvider land. -->
+    <external-files-path name="captures" path="captures/" />
+</paths>

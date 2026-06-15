@@ -1,0 +1,39 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!--
+  Glyph Maps launcher icon foreground — the GlyphNav brand mark.
+
+  An up-chevron rendered as Glyph-Matrix dots: the same warm-glow arrow the
+  app lights on the back of the phone and shows in the in-app wordmark. Five
+  bright head dots (tip + two inner + two outer arms) in warm white #FFE9B5,
+  with a three-dot shaft trailing dimmer behind — exactly like the LED head
+  (full) and tail (~62%) the matrix renders. Sits on the near-black adaptive
+  background.
+
+  108x108 viewport; arrow kept inside the adaptive-icon safe zone. Each glyph
+  is a radius-6 circle drawn with two arcs.
+-->
+<vector xmlns:android="http://schemas.android.com/apk/res/android"
+    android:width="108dp"
+    android:height="108dp"
+    android:viewportWidth="108"
+    android:viewportHeight="108">
+
+    <!-- Head: chevron (tip + inner arms + outer arms), full warm glow. -->
+    <path
+        android:fillColor="#FFE9B5"
+        android:pathData="
+            M48,28 a6,6 0 1,0 12,0 a6,6 0 1,0 -12,0 z
+            M34,42 a6,6 0 1,0 12,0 a6,6 0 1,0 -12,0 z
+            M62,42 a6,6 0 1,0 12,0 a6,6 0 1,0 -12,0 z
+            M22,56 a6,6 0 1,0 12,0 a6,6 0 1,0 -12,0 z
+            M74,56 a6,6 0 1,0 12,0 a6,6 0 1,0 -12,0 z" />
+
+    <!-- Tail: three-dot shaft, dimmed (matches the LED tail brightness). -->
+    <path
+        android:fillColor="#FFE9B5"
+        android:fillAlpha="0.62"
+        android:pathData="
+            M48,56 a6,6 0 1,0 12,0 a6,6 0 1,0 -12,0 z
+            M48,70 a6,6 0 1,0 12,0 a6,6 0 1,0 -12,0 z
+            M48,82 a6,6 0 1,0 12,0 a6,6 0 1,0 -12,0 z" />
+</vector>
