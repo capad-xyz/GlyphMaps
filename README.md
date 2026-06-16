@@ -181,7 +181,7 @@ declarations, store-listing copy, and the asset list.
 - [x] Head/tail LED brightness
 - [x] Clean user build vs. full dev build (manual override + capture log)
 - [x] Release-ready: signed + minified AAB, privacy policy, Play declarations
-- [ ] Production Nothing Glyph key (replace the `test` key) — see PUBLISHING.md
+- [ ] Play Store listing (closed testing → production) — see PUBLISHING.md
 - [ ] Auto-dim (ambient light / time of day)
 - [ ] ETA / speed display modes
 

@@ -26,18 +26,39 @@ means resetting your Play upload key.
 
 ---
 
-## 1. Real blockers (do these or the app won't work / won't be accepted)
+## 1. Real blockers (do these or the app won't be accepted)
 
-1. **Nothing Glyph production key.** `AndroidManifest.xml` ships
-   `NothingKey = "test"` — the example/dev key. Apply to the
-   [Nothing Developer Programme](https://github.com/Nothing-Developer-Programme/GlyphMatrix-Developer-Kit)
-   for a production key tied to applicationId `com.glyphnavtoy`, replace `"test"`,
-   and **verify the Matrix lights up on a clean release install on a
-   non-developer device.** If the test key doesn't authenticate in production,
-   the core feature won't work for users.
-2. **Host the privacy policy.** Put `PRIVACY_POLICY.md` at a public HTTPS URL
-   (GitHub Pages, a gist, your site) and fill in `[YOUR_EMAIL]`. You'll need the
-   URL for the store listing AND the in-app disclosure.
+1. **Host the privacy policy.** Put `PRIVACY_POLICY.md` at a public HTTPS URL
+   (GitHub Pages, a gist, your site) and fill in `[YOUR_EMAIL]`. Required for the
+   store listing AND the in-app disclosure (notification-access apps must have one).
+2. **Closed testing, if this is a personal Play account created after 13 Nov 2023.**
+   Google requires **≥12 testers opted in for 14 continuous days** on a closed
+   track *before* you can apply for production. Org accounts (registered legal
+   entity) are exempt. Budget 2+ weeks. (See the testing track in §7.)
+3. **In-app prominent disclosure before requesting Notification Access.** Play's
+   Notification Listener policy wants an explicit in-app screen stating the app
+   reads Google Maps navigation notifications, which the user accepts *before*
+   you send them to the system settings. The current Setup card routes straight
+   to settings — add a short consent screen first. (Code change, small.)
+
+### Not a blocker: the `NothingKey`
+
+`AndroidManifest.xml` ships `NothingKey = "test"`. **This is fine — no key is
+required to drive the Matrix.** The Glyph Matrix SDK only needs an API key for
+publishing **Glyph Toys** (carousel widgets); this app drives the Matrix
+directly via `setAppMatrixFrame`, which needs no key. `"test"` is exactly what
+Nothing's own example project ships, and the Matrix lights up with it. Leave it
+as-is. (`setAppMatrixFrame` does require Nothing OS system version `20250801`+,
+which Android-16-era 4a Pro phones have.)
+
+### Heads-up: target API & account
+
+- **Target API:** currently `targetSdk 35` (Android 15) — valid for new
+  submissions until **31 Aug 2026**, after which Google requires **API 36**
+  (Android 16). Bump `compileSdk`/`targetSdk` to 36 before then (the 4a Pro runs
+  Android 16, so it's a safe move now).
+- **Play Console account:** $25 one-time fee + **identity verification** (D-U-N-S
+  for an org, ID for personal) and 2-step verification are now mandatory.
 
 ---
 
@@ -160,20 +181,22 @@ sharing, personal-info sharing). Result: **Everyone / PEGI 3.**
 
 ## 7. Pre-launch checklist (human-only)
 
-1. [ ] Get the **production Nothing Glyph key**, replace `NothingKey "test"`, and
-       confirm the Matrix works on a clean release install (Section 1).
-2. [ ] Host **`PRIVACY_POLICY.md`** at an HTTPS URL; fill in `[YOUR_EMAIL]`.
+1. [ ] Host **`PRIVACY_POLICY.md`** at an HTTPS URL; fill in `[YOUR_EMAIL]`.
+2. [ ] Add the **in-app prominent disclosure** before the Notification-Access ask (§1.3).
 3. [ ] Run `build-release.cmd`; confirm `app-user-release.aab` is produced and signed.
 4. [ ] Back up `upload-keystore.jks` + `keystore.properties` somewhere safe.
-5. [ ] Create the app in Play Console; enable **Play App Signing**.
+5. [ ] Create the Play Console account: pay $25, complete **identity verification**
+       + 2-step verification; create the app and enable **Play App Signing**.
 6. [ ] Paste store listing (Section 2); upload icon, feature graphic, screenshots (Section 3).
 7. [ ] Complete **Data Safety** (Section 4) and **IARC** rating (Section 6).
 8. [ ] Submit **Notification access** + **special-use FGS** declarations (Section 5).
-9. [ ] Upload the AAB to an **internal testing** track; install on a real 4a Pro;
+9. [ ] Upload the AAB to a **closed testing** track; install on a real 4a Pro;
        grant Notification Access to only the one flavor; run a live Maps route
        end-to-end; confirm the Matrix lights and releases correctly.
-10. [ ] Set contact email/support, select countries, confirm Free, accept
-        policies, then promote to production / submit for review.
+10. [ ] **Personal accounts (post-13-Nov-2023):** keep ≥12 testers opted in for
+        **14 continuous days** on closed testing before applying for production.
+11. [ ] Set contact email/support, select countries, confirm Free, accept
+        policies, then apply for production / submit for review.
 
 ---
 
