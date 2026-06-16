@@ -1,83 +1,108 @@
+<div align="center">
+
 # Glyph Maps
 
 **Turn-by-turn navigation on the back of your Nothing Phone (4a) Pro.**
 
-Glyph Maps mirrors Google Maps' next turn — the maneuver arrow and the
-distance to it — onto the rear Glyph Matrix while you navigate. Glance at the
-back of your phone instead of the screen.
+Glyph Maps mirrors Google Maps' next turn — the maneuver arrow and the distance
+to it — onto the rear Glyph Matrix while you navigate. Glance at the back of
+your phone instead of the screen.
 
-<!-- DEMO GIF -->
-<!-- Drop a screen/back-of-phone recording here:  ![demo](docs/demo.gif)  -->
-<p align="center"><em>(demo GIF — see "Recording a demo" below)</em></p>
+![Platform](https://img.shields.io/badge/platform-Android-3DDC84?logo=android&logoColor=white)
+![Min SDK](https://img.shields.io/badge/minSdk-34_(Android_14)-blue)
+![Kotlin](https://img.shields.io/badge/Kotlin-2.0-7F52FF?logo=kotlin&logoColor=white)
+![Jetpack Compose](https://img.shields.io/badge/UI-Jetpack_Compose-4285F4?logo=jetpackcompose&logoColor=white)
+![Device](https://img.shields.io/badge/device-Nothing_Phone_(4a)_Pro-000000)
+![License](https://img.shields.io/github/license/capad-xyz/GlyphMaps?color=lightgrey)
+
+<img src="docs/screenshots/hero.png" width="300" alt="Glyph Maps showing the next maneuver on the Glyph Matrix" />
+
+</div>
 
 ---
 
 ## What it does
 
-- Shows the **next maneuver** (turn left/right, sharp turns, keep left/right,
-  forks, roundabouts, U-turns, "arrived") as a clean dot-matrix arrow.
-- Scrolls the **distance to the turn** ("300m", "1.5k") beneath the arrow.
-- Reads directions straight from Google Maps' Android 16 Live Updates — no
-  Google API key, no account, no extra setup.
-- **Only claims the Matrix while you're actually navigating.** Start a route
+- 🧭 Shows the **next maneuver** — turn left/right, sharp turns, keep left/right,
+  forks, roundabouts, U-turns and "arrived" — as a clean dot-matrix arrow.
+- 📏 Scrolls the **distance to the turn** ("300m", "1.5k") beneath the arrow.
+- 🔌 Reads directions straight from Google Maps' **Live Updates** notification —
+  no Google API key, no account, no extra setup.
+- 🤝 **Only claims the Matrix while you're actually navigating.** Start a route
   and it takes over; end the route and it hands the Matrix straight back to
   whatever Glyph toy you normally run.
+- 🔒 **100% on-device.** No network code, no analytics, no account — it reads
+  one notification and draws dots. Nothing leaves your phone.
+
+## Screenshots
+
+<div align="center">
+<img src="docs/screenshots/app.png" width="260" alt="Glyph Maps main screen" />
+&nbsp;&nbsp;
+<img src="docs/screenshots/hero.png" width="260" alt="Next maneuver readout" />
+</div>
+
+<p align="center"><sub>Left: the app's main screen (live preview · display mode · brightness). Right: the next-turn readout. <br/>The money shot — the lit Matrix on the back of the phone during a route — needs an external camera (see <a href="#recording-a-demo">Recording a demo</a>).</sub></p>
 
 ## Requirements
 
-- **Nothing Phone (4a) Pro** (the model with the circular Glyph Matrix)
-- **Nothing OS 4.x / Android 16** or newer (for Maps Live Updates)
-- **Google Maps** with Live Updates (default on recent versions)
+- **Nothing Phone (4a) Pro** — the model with the circular Glyph Matrix (137 LEDs).
+- **Nothing OS / Android 14+** with Google Maps **Live Updates** (default on
+  recent Maps versions).
+- **Google Maps** running an active route — Glyph Maps *mirrors* Maps; it is not
+  a standalone navigation app and does no routing of its own.
 
-## Install
+## Getting started
 
-1. Download the latest `app-debug.apk` from
-   [Releases](../../releases) (or build from source — see below).
-2. Sideload it: copy to the phone and tap it, or `adb install app-debug.apk`.
-   (Android will warn about installing from an unknown source — that's normal
-   for a sideloaded app.)
-3. Open **Glyph Maps**. The first-run screen walks you through two permissions:
-   - **Notification access** — so it can read Maps' live directions. *Required.*
-   - **Unrestricted battery** — so updates stay instant in the background.
-     *Recommended.*
-4. Open Google Maps, start any route. Flip your phone over — the Matrix lights
-   up with your next turn. That's it.
+1. **Install** — build from source (below), or grab a build from
+   [Releases](../../releases) when available.
+2. **Grant Notification Access** — on first launch the app links you to the
+   system setting. This is *required*: it's how Glyph Maps reads Maps' live
+   directions. (It's filtered to the Google Maps package + the `navigation`
+   category — everything else is ignored.)
+3. **Navigate** — open Google Maps, start any route, flip your phone over. The
+   Matrix lights up with your next turn. The app doesn't even need to stay open.
+
+> [!NOTE]
+> If you also run a custom **Glyph Toy**, grant Notification Access to only one
+> Glyph-Matrix app at a time — two listeners will fight over the Matrix during
+> navigation.
+
+## Customisation
+
+- **LED brightness** — independent **head** (the bright arrowhead) and **tail**
+  (the dim trail) sliders, persisted across sessions.
+- **Display mode** — *Static Glow* (steady) or *Sweeping Flow* (a comet animates
+  along the arrow toward the turn). The sweep is generated from the static
+  pattern, so the two always match.
+- **Speed-aware preview** — a far-off turn shows a "continue, then turn" arrow and
+  flips to the direct icon as you approach, matching Google's own preview window
+  scaled to your current speed.
 
 ## Privacy
 
 - The app reads **only Google Maps' navigation notification** (filtered by
-  package + the `navigation` category). It ignores everything else, even other
+  package + the `navigation` category). It ignores everything else — even other
   Maps notifications.
-- Nothing leaves your phone. There's no network code, no analytics, no account.
-- Notification access is a powerful permission — the source is here so you can
-  verify exactly what it does (`service/MapsNotificationListener.kt`).
+- **Nothing leaves your phone.** There is no networking code, no analytics, no
+  account, no ads.
+- The only thing stored is your display preferences (brightness, mode) in
+  private app storage.
+- Notification access is a powerful permission — the source is right here, so you
+  can verify exactly what it does in
+  [`MapsNotificationListener.kt`](app/src/main/kotlin/com/glyphnavtoy/service/MapsNotificationListener.kt).
 
-> Note: a developer capture log (for tuning the parser) can write Maps
-> directions to the app's private storage in the **dev** build only. The public
-> **user** build writes nothing and logs no notification content (both are
-> gated behind `BuildConfig.IS_DEV`, and all logging is stripped from release).
-
-## Using it
-
-- **It runs itself.** No need to keep the app open — once permissions are
-  granted, starting Maps navigation triggers the Matrix automatically, even
-  with the app closed.
-- **Brightness** is tunable (independent head + tail) on the main screen — dial
-  it to taste; values persist.
-- The Matrix is released the moment navigation ends, so your normal Glyph toy
-  comes right back.
-
----
+Full policy: [`PRIVACY_POLICY.md`](PRIVACY_POLICY.md).
 
 ## How it works
 
-The 4a Pro restricts *Glyph Toys* to always-on-display only, with a 1-minute
+The 4a Pro restricts *Glyph Toys* to always-on-display only, with a ~1-minute
 update cadence — far too slow for live navigation. Glyph Maps sidesteps that:
-it's a normal app that drives the Matrix directly with `setAppMatrixFrame`,
-only while a route is active.
+it's a normal app that drives the Matrix directly with `setAppMatrixFrame`, only
+while a route is active.
 
 ```
-Google Maps  (Android 16 Live Updates notification, ~every 2-5s)
+Google Maps  (Live Updates notification, ~every 2-5s)
     │
     ▼
 MapsNotificationListener   reads title + distance, maps Google's maneuver
@@ -92,82 +117,98 @@ MatrixComposer → GlyphRenderer → setAppMatrixFrame()
 Glyph Matrix  (137 LEDs, circular 13×13)
 ```
 
-Speed-aware preview: a far-off turn shows a "continue, then turn" arrow and
-flips to the direct turn icon as you approach — matching Google's own ~15s
-preview window, scaled to your current speed.
-
 ### Project layout
 
 ```
 app/src/main/kotlin/com/glyphnavtoy/
-  MainActivity.kt              UI (main + hidden dev tools)
+  MainActivity.kt              Compose UI (clean user build · full dev build)
   glyph/
     Maneuver.kt                12-maneuver set + Google-vocabulary mapping
     ArrowBitmaps.kt            dot-matrix arrow patterns (head/tail chars)
+    ArrowSweep.kt              procedural sweep animation, derived from static
     MatrixFrame.kt             13×13 grid + circular LED mask
     MatrixComposer.kt          NavState → frame (arrow + distance marquee)
     GlyphRenderer.kt           owns GlyphMatrixManager, pushes frames
-    GlyphSettings.kt           per-maneuver brightness, persisted
+    GlyphSettings.kt           head/tail brightness + display mode, persisted
     DigitFont.kt               3×5 pixel font for the distance marquee
   nav/
-    NavState.kt, NavStateRepo.kt, Speedometer.kt
+    NavState.kt · NavStateRepo.kt · Speedometer.kt · PresetRoute.kt
   service/
     GlyphRenderService.kt      foreground render loop (nav-only lifecycle)
     MapsNotificationListener.kt  reads Maps, parses, forwards
-  capture/CaptureWriter.kt     dev-only on-device logging
+  capture/CaptureWriter.kt     dev-only on-device capture log
 ```
 
 ## Build from source
 
-```
-push.cmd             # build + install + relaunch the dev build on a device
-build-release.cmd    # build the signed USER release App Bundle (.aab) for Play
+Two flavors install side by side:
+
+| Flavor | App ID | What's in it |
+|---|---|---|
+| **user** | `com.glyphnavtoy` | The clean product — live preview, display mode, brightness. |
+| **dev** | `com.glyphnavtoy.dev` | Everything + manual maneuver override, route simulator, capture log. |
+
+```sh
+# Dev build → install + relaunch on a connected device
+push.cmd
+
+# Signed USER release App Bundle (.aab) for Google Play
+build-release.cmd
 ```
 
 The dev APK lands in `app/build/outputs/apk/dev/debug/`; the release bundle in
-`app/build/outputs/bundle/userRelease/app-user-release.aab`.
+`app/build/outputs/bundle/userRelease/app-user-release.aab`. On a standard
+machine, plain `./gradlew :app:assembleUserDebug` works too.
 
-**Publishing:** see [`PUBLISHING.md`](PUBLISHING.md) for the full Play Store
-checklist (signing, Data Safety, permission declarations, store copy) and
-[`PRIVACY_POLICY.md`](PRIVACY_POLICY.md).
+> [!TIP]
+> Release signing reads from a gitignored `keystore.properties` at the repo root
+> (it falls back to the debug key when absent, so clones still build). See
+> [`PUBLISHING.md`](PUBLISHING.md) to set up your own upload key.
 
-### Build environment note
+## Publishing
 
-This was developed on a Windows machine that needs two non-default settings
-(baked into `build.cmd`):
-
-1. **JDK 21** (Android Studio's bundled JBR), not system JDK 17 — JDK 17 hit
-   an "Unable to establish loopback connection" error here (Gradle's AF_UNIX
-   worker pipe).
-2. **A space-free temp dir** (`C:\GradleTmp`) — the default temp path's
-   8.3-truncated form broke AF_UNIX socket creation.
-
-On a normal setup, plain `./gradlew :app:assembleDebug` should just work.
+[`PUBLISHING.md`](PUBLISHING.md) is the full Google Play checklist — signing,
+Data Safety answers, the Notification Access + special-use foreground-service
+declarations, store-listing copy, and the asset list.
 
 ## Roadmap
 
-- [x] Gate the dev capture logging + all notification logging off for release
-- [x] Real release build (signed, minified, resource-shrunk AAB)
-- [x] Play-ready: privacy policy, Data Safety, permission declarations
+- [x] Procedural sweep animation that always matches the static arrows
+- [x] Head/tail LED brightness
+- [x] Clean user build vs. full dev build (manual override + capture log)
+- [x] Release-ready: signed + minified AAB, privacy policy, Play declarations
 - [ ] Production Nothing Glyph key (replace the `test` key) — see PUBLISHING.md
 - [ ] Auto-dim (ambient light / time of day)
 - [ ] ETA / speed display modes
 
+## Tech stack
+
+Kotlin · Jetpack Compose · Coroutines · Android `NotificationListenerService` +
+foreground service · the [Nothing Glyph Matrix SDK][sdk].
+
 ## Recording a demo
 
-The good shot is the **back of the phone** (the Matrix) during a route —
-that needs an external camera. For the in-app UI, screen-record with:
+The good shot is the **back of the phone** during a route — that needs an
+external camera. For the in-app UI:
 
-```
-adb shell screenrecord /sdcard/demo.mp4      # Ctrl-C to stop
+```sh
+adb shell screenrecord /sdcard/demo.mp4   # Ctrl-C to stop
 adb pull /sdcard/demo.mp4
 ```
 
-Convert to GIF with ffmpeg, then drop it at `docs/demo.gif` and uncomment the
-image line at the top of this file.
-
 ## Credits
 
-Built for the Nothing community. Uses the
-[Glyph Matrix Developer Kit](https://github.com/Nothing-Developer-Programme/GlyphMatrix-Developer-Kit).
-Not affiliated with Nothing Technology or Google.
+Built for the Nothing community on top of the
+[Glyph Matrix Developer Kit][sdk].
+
+## License
+
+[MIT](LICENSE).
+
+---
+
+<sub>Glyph Maps is an independent app and is not affiliated with, endorsed by, or
+sponsored by Google or Nothing Technology. "Google Maps" and "Nothing" are
+trademarks of their respective owners.</sub>
+
+[sdk]: https://github.com/Nothing-Developer-Programme/GlyphMatrix-Developer-Kit
