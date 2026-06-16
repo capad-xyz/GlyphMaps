@@ -8,12 +8,12 @@ Glyph Maps mirrors Google Maps' next turn — the maneuver arrow and the distanc
 to it — onto the rear Glyph Matrix while you navigate. Glance at the back of
 your phone instead of the screen.
 
-[![Download APK](https://img.shields.io/github/v/release/capad-xyz/GlyphMaps?label=Download%20APK&logo=android&color=3DDC84)](https://github.com/capad-xyz/GlyphMaps/releases/latest)
+[![Download APK](https://img.shields.io/badge/Download-APK_v1.0.0-3DDC84?logo=android&logoColor=white)](https://github.com/capad-xyz/GlyphMaps/releases/latest)
 ![Min SDK](https://img.shields.io/badge/minSdk-34_(Android_14)-blue)
 ![Kotlin](https://img.shields.io/badge/Kotlin-2.0-7F52FF?logo=kotlin&logoColor=white)
 ![Jetpack Compose](https://img.shields.io/badge/UI-Jetpack_Compose-4285F4?logo=jetpackcompose&logoColor=white)
 ![Device](https://img.shields.io/badge/device-Nothing_Phone_(4a)_Pro-000000)
-![License](https://img.shields.io/github/license/capad-xyz/GlyphMaps?color=lightgrey)
+![License](https://img.shields.io/badge/license-MIT-lightgrey)
 
 <img src="docs/screenshots/hero.png" width="300" alt="Glyph Maps showing the next maneuver on the Glyph Matrix" />
 
