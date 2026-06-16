@@ -8,7 +8,7 @@ Glyph Maps mirrors Google Maps' next turn — the maneuver arrow and the distanc
 to it — onto the rear Glyph Matrix while you navigate. Glance at the back of
 your phone instead of the screen.
 
-![Platform](https://img.shields.io/badge/platform-Android-3DDC84?logo=android&logoColor=white)
+[![Download APK](https://img.shields.io/github/v/release/capad-xyz/GlyphMaps?label=Download%20APK&logo=android&color=3DDC84)](https://github.com/capad-xyz/GlyphMaps/releases/latest)
 ![Min SDK](https://img.shields.io/badge/minSdk-34_(Android_14)-blue)
 ![Kotlin](https://img.shields.io/badge/Kotlin-2.0-7F52FF?logo=kotlin&logoColor=white)
 ![Jetpack Compose](https://img.shields.io/badge/UI-Jetpack_Compose-4285F4?logo=jetpackcompose&logoColor=white)
@@ -16,6 +16,8 @@ your phone instead of the screen.
 ![License](https://img.shields.io/github/license/capad-xyz/GlyphMaps?color=lightgrey)
 
 <img src="docs/screenshots/hero.png" width="300" alt="Glyph Maps showing the next maneuver on the Glyph Matrix" />
+
+### [⬇️ Download the latest APK](https://github.com/capad-xyz/GlyphMaps/releases/latest)
 
 </div>
 
@@ -54,8 +56,10 @@ your phone instead of the screen.
 
 ## Getting started
 
-1. **Install** — build from source (below), or grab a build from
-   [Releases](../../releases) when available.
+1. **Install** — download **[GlyphMaps&#8209;1.0.0.apk](https://github.com/capad-xyz/GlyphMaps/releases/latest)**
+   onto your phone and tap to install (allow *Install from unknown sources* if
+   prompted), or `adb install GlyphMaps-1.0.0.apk`. You can also build from
+   source (below).
 2. **Grant Notification Access** — on first launch the app links you to the
    system setting. This is *required*: it's how Glyph Maps reads Maps' live
    directions. (It's filtered to the Google Maps package + the `navigation`
