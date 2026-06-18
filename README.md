@@ -224,12 +224,20 @@ GlyphMaps as a built-in Glyph Matrix feature are explicitly welcome.
 
 Contact: **capad.xyz@gmail.com**
 
-### "GlyphMaps" — name & marks
+### Name, marks & brand assets
 
-The name **"GlyphMaps"** and the dot-matrix chevron mark are used to identify
-this project and its authors. The AGPL covers the *code*; please don't ship a
-fork using the same name or mark in a way that implies it's an official build
-or affiliated with the original. Rename your fork.
+The AGPL above covers the **source code**. It does **not** grant any rights to
+the project's brand assets, which are © 2026 capad.io, **all rights reserved**:
+
+- the names **"GlyphMaps"** and **"GlyphNav"**;
+- the app launcher icon and the dot-matrix chevron mark;
+- promotional artwork (`promo/`) and product screenshots (`docs/screenshots/`).
+
+If you fork the project, **rename it and replace the icon and artwork** so your
+build isn't presented as an official or affiliated release — the AGPL still
+applies to the code you fork. This carve-out does **not** cover third-party
+material (e.g. the Glyph Matrix layout references under `reference/`, or bundled
+fonts), which keep their own licenses. Full statement: [`NOTICE`](NOTICE).
 
 ### Contributions
 

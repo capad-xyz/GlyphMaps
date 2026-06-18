@@ -1,0 +1,50 @@
+GlyphMaps — Licensing Notice
+============================
+
+GlyphMaps (in-app wordmark "GlyphNav")
+Copyright (c) 2026 capad.io  <capad.xyz@gmail.com>
+
+
+1. SOURCE CODE
+--------------
+The source code of this project is licensed under the GNU Affero General
+Public License v3.0 (AGPL-3.0). See the LICENSE file for the full text.
+
+A separate commercial / proprietary license is also available (for closed-
+source use, or shipping GlyphMaps as a built-in device/OS feature). See the
+"Commercial / proprietary licensing" section of README.md.
+Contact: capad.xyz@gmail.com
+
+
+2. BRAND ASSETS — *NOT* COVERED BY THE AGPL
+-------------------------------------------
+The following are (c) 2026 capad.io, ALL RIGHTS RESERVED. They are NOT
+licensed under the AGPL and are NOT granted by it. Do not use, reproduce, or
+redistribute them in a fork, derivative, or any other product without separate
+written permission:
+
+  - The names "GlyphMaps" and "GlyphNav".
+  - The application launcher icon and the dot-matrix chevron mark:
+      app/src/main/res/drawable/ic_launcher_foreground.xml
+      app/src/main/res/mipmap-anydpi-v26/ic_launcher.xml
+      app/src/main/res/mipmap-anydpi-v26/ic_launcher_round.xml
+  - Promotional / marketing artwork, including material under promo/
+    (e.g. promo/title-card.svg) and anything rendered from it.
+  - Product screenshots, including docs/screenshots/.
+
+If you fork this project, you MUST rename it and remove or replace these
+assets, so your build is not presented as an official or affiliated release.
+The AGPL continues to apply to the code you fork.
+
+
+3. THIRD-PARTY MATERIAL (reserved by others, not by capad.io)
+-------------------------------------------------------------
+Section 2 does not apply to material owned by third parties, which keeps its
+own licensing:
+
+  - reference/matrix-layout/*.svg — Glyph Matrix layout references from the
+    Nothing Glyph Matrix Developer Kit; (c) their respective owner.
+  - Fonts under app/src/main/res/font/ — governed by their own font licenses.
+  - "Google Maps" and "Nothing" are trademarks of their respective owners.
+    GlyphMaps is an independent app, not affiliated with, endorsed by, or
+    sponsored by Google or Nothing Technology.

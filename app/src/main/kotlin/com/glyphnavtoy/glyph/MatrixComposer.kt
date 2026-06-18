@@ -1,3 +1,8 @@
+// SPDX-License-Identifier: AGPL-3.0-only
+// Copyright (C) 2026 capad.io <capad.xyz@gmail.com>
+// GlyphMaps - licensed under AGPL-3.0 (see LICENSE).
+// Brand assets (name, icon, artwork) are NOT covered by the AGPL; see NOTICE.
+
 package com.glyphnavtoy.glyph
 
 import com.glyphnavtoy.nav.NavState
