@@ -1,6 +1,6 @@
 @echo off
 REM Build the USER flavor — the clean product for distribution. No dev screen,
-REM no on-disk capture logging. Installs as "Glyph Maps" (com.glyphnavtoy).
+REM no on-disk capture logging. Installs as "GlyphMaps" (com.glyphnavtoy).
 REM
 REM This builds the debug-signed APK (fine for sideloading / community sharing).
 REM For a proper signed release, switch to assembleUserRelease once a keystore

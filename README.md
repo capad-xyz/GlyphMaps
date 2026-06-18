@@ -1,10 +1,10 @@
 <div align="center">
 
-# Glyph Maps
+# GlyphMaps
 
 **Turn-by-turn navigation on the back of your Nothing Phone (4a) Pro.**
 
-Glyph Maps mirrors Google Maps' next turn — the maneuver arrow and the distance
+GlyphMaps mirrors Google Maps' next turn — the maneuver arrow and the distance
 to it — onto the rear Glyph Matrix while you navigate. Glance at the back of
 your phone instead of the screen.
 
@@ -13,9 +13,9 @@ your phone instead of the screen.
 ![Kotlin](https://img.shields.io/badge/Kotlin-2.0-7F52FF?logo=kotlin&logoColor=white)
 ![Jetpack Compose](https://img.shields.io/badge/UI-Jetpack_Compose-4285F4?logo=jetpackcompose&logoColor=white)
 ![Device](https://img.shields.io/badge/device-Nothing_Phone_(4a)_Pro-000000)
-![License](https://img.shields.io/badge/license-MIT-lightgrey)
+![License](https://img.shields.io/badge/license-AGPL--3.0-D22128)
 
-<img src="docs/screenshots/hero.png" width="300" alt="Glyph Maps showing the next maneuver on the Glyph Matrix" />
+<img src="docs/screenshots/hero.png" width="300" alt="GlyphMaps showing the next maneuver on the Glyph Matrix" />
 
 ### [⬇️ Download the latest APK](https://github.com/capad-xyz/GlyphMaps/releases/latest)
 
@@ -39,7 +39,7 @@ your phone instead of the screen.
 ## Screenshots
 
 <div align="center">
-<img src="docs/screenshots/app.png" width="260" alt="Glyph Maps main screen" />
+<img src="docs/screenshots/app.png" width="260" alt="GlyphMaps main screen" />
 &nbsp;&nbsp;
 <img src="docs/screenshots/hero.png" width="260" alt="Next maneuver readout" />
 </div>
@@ -51,7 +51,7 @@ your phone instead of the screen.
 - **Nothing Phone (4a) Pro** — the model with the circular Glyph Matrix (137 LEDs).
 - **Nothing OS / Android 14+** with Google Maps **Live Updates** (default on
   recent Maps versions).
-- **Google Maps** running an active route — Glyph Maps *mirrors* Maps; it is not
+- **Google Maps** running an active route — GlyphMaps *mirrors* Maps; it is not
   a standalone navigation app and does no routing of its own.
 
 ## Getting started
@@ -61,7 +61,7 @@ your phone instead of the screen.
    prompted), or `adb install GlyphMaps-1.0.0.apk`. You can also build from
    source (below).
 2. **Grant Notification Access** — on first launch the app links you to the
-   system setting. This is *required*: it's how Glyph Maps reads Maps' live
+   system setting. This is *required*: it's how GlyphMaps reads Maps' live
    directions. (It's filtered to the Google Maps package + the `navigation`
    category — everything else is ignored.)
 3. **Navigate** — open Google Maps, start any route, flip your phone over. The
@@ -101,7 +101,7 @@ Full policy: [`PRIVACY_POLICY.md`](PRIVACY_POLICY.md).
 ## How it works
 
 The 4a Pro restricts *Glyph Toys* to always-on-display only, with a ~1-minute
-update cadence — far too slow for live navigation. Glyph Maps sidesteps that:
+update cadence — far too slow for live navigation. GlyphMaps sidesteps that:
 it's a normal app that drives the Matrix directly with `setAppMatrixFrame`, only
 while a route is active.
 
@@ -207,11 +207,39 @@ Built for the Nothing community on top of the
 
 ## License
 
-[MIT](LICENSE).
+**[GNU Affero General Public License v3.0](LICENSE)** (AGPL-3.0).
+
+Use, modify, and redistribute freely — but any modified or derived version you
+ship to anyone (including as a hosted service) must publish its full source code
+under the same license, with credit preserved. You cannot fold this code into a
+closed-source product, paid or otherwise.
+
+### Commercial / proprietary licensing
+
+If AGPL doesn't work for you — e.g. you want to integrate GlyphMaps into a
+closed-source product, ship it as a built-in feature of a device or OS, or
+embed it without the share-alike obligation — a separate commercial license is
+available. Inquiries from **Nothing Technology Ltd.** about integrating
+GlyphMaps as a built-in Glyph Matrix feature are explicitly welcome.
+
+Contact: **capad.xyz@gmail.com**
+
+### "GlyphMaps" — name & marks
+
+The name **"GlyphMaps"** and the dot-matrix chevron mark are used to identify
+this project and its authors. The AGPL covers the *code*; please don't ship a
+fork using the same name or mark in a way that implies it's an official build
+or affiliated with the original. Rename your fork.
+
+### Contributions
+
+By submitting a pull request, you agree that your contribution may be
+relicensed by the project owner for the purpose of granting a separate
+proprietary/commercial license alongside the AGPL.
 
 ---
 
-<sub>Glyph Maps is an independent app and is not affiliated with, endorsed by, or
+<sub>GlyphMaps is an independent app and is not affiliated with, endorsed by, or
 sponsored by Google or Nothing Technology. "Google Maps" and "Nothing" are
 trademarks of their respective owners.</sub>
 

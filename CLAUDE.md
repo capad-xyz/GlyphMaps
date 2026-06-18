@@ -18,9 +18,9 @@ immediately. Incremental builds take ~6s.
 
 ### Two flavors
 
-- **dev** (`push.cmd`) — `com.glyphnavtoy.dev`, "Glyph Maps Dev", dark-red
+- **dev** (`push.cmd`) — `com.glyphnavtoy.dev`, "GlyphMaps Dev", dark-red
   icon. All tools: DEV screen, route simulator, on-disk capture logging.
-- **user** (`build-user.cmd`) — `com.glyphnavtoy`, "Glyph Maps", black icon.
+- **user** (`build-user.cmd`) — `com.glyphnavtoy`, "GlyphMaps", black icon.
   Clean product: no DEV button, no capture-to-disk.
 
 `BuildConfig.IS_DEV` gates the difference. Both install side by side. Grant

@@ -1,6 +1,6 @@
 @echo off
 REM Build + install + relaunch the DEV flavor (the daily-driver build with all
-REM tools). Installs as "Glyph Maps Dev" (applicationId com.glyphnavtoy.dev),
+REM tools). Installs as "GlyphMaps Dev" (applicationId com.glyphnavtoy.dev),
 REM so it coexists with the user build.
 REM
 REM Env quirks (see CLAUDE.md / README):
@@ -24,11 +24,11 @@ if errorlevel 1 (
 )
 
 echo.
-echo Installing USER APK (Glyph Maps)...
+echo Installing USER APK (GlyphMaps)...
 adb install -r "%~dp0app\build\outputs\apk\user\debug\app-user-debug.apk"
 
 echo.
-echo Installing DEV APK (Glyph Maps Dev)...
+echo Installing DEV APK (GlyphMaps Dev)...
 adb install -r "%~dp0app\build\outputs\apk\dev\debug\app-dev-debug.apk"
 if errorlevel 1 (
     echo.
@@ -37,7 +37,7 @@ if errorlevel 1 (
 )
 
 echo.
-echo Relaunching Glyph Maps Dev (the active/listening build)...
+echo Relaunching GlyphMaps Dev (the active/listening build)...
 adb shell am force-stop com.glyphnavtoy.dev
 adb shell am start -n com.glyphnavtoy.dev/com.glyphnavtoy.MainActivity
 

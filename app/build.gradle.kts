@@ -67,14 +67,14 @@ android {
             dimension = "tier"
             isDefault = true
             buildConfigField("boolean", "IS_DEV", "false")
-            // app_name comes from src/main → "Glyph Maps"
+            // app_name comes from src/main → "GlyphMaps"
         }
         create("dev") {
             dimension = "tier"
             applicationIdSuffix = ".dev"
             versionNameSuffix = "-dev"
             buildConfigField("boolean", "IS_DEV", "true")
-            // app_name overridden in src/dev → "Glyph Maps Dev"
+            // app_name overridden in src/dev → "GlyphMaps Dev"
         }
     }
 

@@ -1,4 +1,4 @@
-# Publishing Glyph Maps to Google Play
+# Publishing GlyphMaps to Google Play
 
 Everything the code can't do for you, in one place. The app code/config is
 release-ready (signed AAB, minified, logging gated, Play-friendly permissions);
@@ -64,14 +64,14 @@ which Android-16-era 4a Pro phones have.)
 
 ## 2. Store listing copy (ready to paste)
 
-- **Title (≤30):** `Glyph Maps – Turn Arrows`
+- **Title (≤30):** `GlyphMaps – Turn Arrows`
 - **Short description (≤80):** `Mirror Google Maps turn-by-turn directions onto your Nothing Glyph Matrix.`
 - **Full description:**
 
 ```
 Glance at the back of your phone instead of the screen.
 
-Glyph Maps mirrors your next Google Maps turn — the maneuver arrow and the
+GlyphMaps mirrors your next Google Maps turn — the maneuver arrow and the
 distance to it — onto the rear Glyph Matrix of the Nothing Phone (4a) Pro while
 you navigate. Flip your phone face-down on the mount and your next turn lights
 up across 137 LEDs in clean, minimal NothingOS style.
@@ -99,11 +99,11 @@ Nothing ever leaves your phone.
 REQUIREMENTS — PLEASE READ
 • Nothing Phone (4a) Pro with the circular Glyph Matrix.
 • Google Maps installed, with its turn-by-turn navigation actively running —
-  Glyph Maps mirrors Maps; it is not a standalone navigation app and does not
+  GlyphMaps mirrors Maps; it is not a standalone navigation app and does not
   provide routing.
 • Grant Notification Access on first launch (the app guides you).
 
-Glyph Maps is an independent app. It is not affiliated with, endorsed by, or
+GlyphMaps is an independent app. It is not affiliated with, endorsed by, or
 sponsored by Google or Nothing Technology. "Google Maps" and "Nothing" are
 trademarks of their respective owners.
 ```
@@ -145,7 +145,7 @@ content logging — both are gated behind `IS_DEV`.)
 
 **Notification access (`BIND_NOTIFICATION_LISTENER_SERVICE`)** — submit:
 
-> Glyph Maps's only function is to read Google Maps turn-by-turn navigation
+> GlyphMaps's only function is to read Google Maps turn-by-turn navigation
 > notifications and render the maneuver (turn direction + distance) on the
 > Nothing Phone Glyph Matrix LED display. Notification access is the core and
 > only feature. No Android API other than NotificationListenerService exposes

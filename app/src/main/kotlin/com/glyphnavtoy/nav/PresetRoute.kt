@@ -36,9 +36,18 @@ data class PresetRoute(
     val turnCount: Int
         get() = steps.count { it.maneuver != Maneuver.ARRIVE && it.maneuver != Maneuver.STRAIGHT }
 
-    /** Title used in the dropdown: "Downtown to Home (3 turns, 1.2km)". */
+    /**
+     * Title used in the dropdown: "Downtown to Home (3 turns, 1.2km)".
+     *
+     * A showcase reel carries no meaningful total distance (every step is
+     * distance 0 so the matrix shows a clean arrow), so it's labelled by step
+     * count instead of "(… turns, 0m)".
+     */
     val title: String
-        get() = "$name ($turnCount turns, $totalDistance)"
+        get() = if (steps.sumOf { it.distanceMeters } > 0)
+            "$name ($turnCount turns, $totalDistance)"
+        else
+            "$name (${steps.size} steps)"
 }
 
 /**
@@ -105,6 +114,34 @@ object PresetRoutes {
                     "Turn right at Market Square", 120),
                 RouteStep(Maneuver.ARRIVE, "Old Town",
                     "You have arrived", 0, holdMillis = 6_000L),
+            ),
+        ),
+
+        // ---- Promo capture reel (not a real route — a filming aid) ----
+        // Walks every arrow shape at a fixed, beat-friendly 1.5s cadence so the
+        // matrix changes at an even rate you can cut to music. distance = 0 on
+        // every step means shortDistance() is null → no scrolling marquee → a
+        // PURE arrow on the LEDs, the cleanest possible hero / b-roll shot.
+        // The street/instruction text only labels the on-screen dev card (it's
+        // never drawn on the matrix), so the operator can see which shape is
+        // filming. Order sweeps left-family → right-family → special → arrive.
+        // Set Live sync ON, pick this, hit START, and film the back of the
+        // phone in a dim room. ARRIVE dwells longer to capture the finale.
+        PresetRoute(
+            name = "🎬 Promo Reel",
+            steps = listOf(
+                RouteStep(Maneuver.STRAIGHT,      "Straight",      "STRAIGHT",      0, holdMillis = 1_500L),
+                RouteStep(Maneuver.KEEP_LEFT,     "Keep left",     "KEEP LEFT",     0, holdMillis = 1_500L),
+                RouteStep(Maneuver.LEFT,          "Left",          "LEFT",          0, holdMillis = 1_500L),
+                RouteStep(Maneuver.SHARP_LEFT,    "Sharp left",    "SHARP LEFT",    0, holdMillis = 1_500L),
+                RouteStep(Maneuver.FORWARD_LEFT,  "Forward-left",  "FORWARD LEFT",  0, holdMillis = 1_500L),
+                RouteStep(Maneuver.KEEP_RIGHT,    "Keep right",    "KEEP RIGHT",    0, holdMillis = 1_500L),
+                RouteStep(Maneuver.RIGHT,         "Right",         "RIGHT",         0, holdMillis = 1_500L),
+                RouteStep(Maneuver.SHARP_RIGHT,   "Sharp right",   "SHARP RIGHT",   0, holdMillis = 1_500L),
+                RouteStep(Maneuver.FORWARD_RIGHT, "Forward-right", "FORWARD RIGHT", 0, holdMillis = 1_500L),
+                RouteStep(Maneuver.ROUNDABOUT,    "Roundabout",    "ROUNDABOUT",    0, holdMillis = 1_500L),
+                RouteStep(Maneuver.UTURN,         "U-turn",        "U-TURN",        0, holdMillis = 1_500L),
+                RouteStep(Maneuver.ARRIVE,        "Arrive",        "ARRIVE",        0, holdMillis = 3_000L),
             ),
         ),
     )

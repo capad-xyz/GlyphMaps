@@ -1,12 +1,12 @@
-# Privacy Policy — Glyph Maps
+# Privacy Policy — GlyphMaps
 
 **Last updated: 14 June 2026**
 
-Glyph Maps ("the app", "we") displays Google Maps turn-by-turn directions on
+GlyphMaps ("the app", "we") displays Google Maps turn-by-turn directions on
 the rear Glyph Matrix of the Nothing Phone (4a) Pro. This policy explains
 exactly what the app accesses and what it does — and does not — do with it.
 
-**Summary: Glyph Maps processes everything on your device and transmits
+**Summary: GlyphMaps processes everything on your device and transmits
 nothing. There are no accounts, no analytics, no ads, and no servers.**
 
 ## What we access
@@ -70,7 +70,7 @@ persist until you clear app data or uninstall.
 
 ## Children
 
-Glyph Maps is a utility with no data collection and is not directed at
+GlyphMaps is a utility with no data collection and is not directed at
 children. We do not knowingly collect data from anyone, including children
 under 13.
 
@@ -85,6 +85,6 @@ Questions: **[YOUR_EMAIL]**
 
 ---
 
-Glyph Maps is an independent app and is not affiliated with, endorsed by, or
+GlyphMaps is an independent app and is not affiliated with, endorsed by, or
 sponsored by Google or Nothing Technology. "Google Maps" and "Nothing" are
 trademarks of their respective owners.

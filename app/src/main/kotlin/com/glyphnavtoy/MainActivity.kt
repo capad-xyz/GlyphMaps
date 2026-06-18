@@ -251,7 +251,7 @@ private fun Header() {
         Row(verticalAlignment = Alignment.CenterVertically, horizontalArrangement = Arrangement.spacedBy(12.dp)) {
             GlyphMark(size = 32.dp)
             Text(
-                "Glyph Maps",
+                "GlyphMaps",
                 fontFamily = GlyphFonts.Doto, fontWeight = FontWeight.Black,
                 fontSize = 24.sp, color = GlyphColors.Text,
             )
