@@ -121,7 +121,8 @@ MatrixComposer → GlyphRenderer → setAppMatrixFrame()
 Glyph Matrix  (137 LEDs, circular 13×13)
 ```
 
-### Project layout
+<details>
+<summary><b>Project layout</b></summary>
 
 ```
 app/src/main/kotlin/com/glyphnavtoy/
@@ -131,17 +132,18 @@ app/src/main/kotlin/com/glyphnavtoy/
     ArrowBitmaps.kt            dot-matrix arrow patterns (head/tail chars)
     ArrowSweep.kt              procedural sweep animation, derived from static
     MatrixFrame.kt             13×13 grid + circular LED mask
-    MatrixComposer.kt          NavState → frame (arrow + distance marquee)
+    MatrixComposer.kt          NavState -> frame (arrow + distance marquee)
     GlyphRenderer.kt           owns GlyphMatrixManager, pushes frames
     GlyphSettings.kt           head/tail brightness + display mode, persisted
     DigitFont.kt               3×5 pixel font for the distance marquee
-  nav/
-    NavState.kt · NavStateRepo.kt · Speedometer.kt · PresetRoute.kt
+  nav/                         NavState, NavStateRepo, Speedometer, PresetRoute
   service/
     GlyphRenderService.kt      foreground render loop (nav-only lifecycle)
     MapsNotificationListener.kt  reads Maps, parses, forwards
   capture/CaptureWriter.kt     dev-only on-device capture log
 ```
+
+</details>
 
 ## Build from source
 
@@ -189,16 +191,6 @@ declarations, store-listing copy, and the asset list.
 
 Kotlin · Jetpack Compose · Coroutines · Android `NotificationListenerService` +
 foreground service · the [Nothing Glyph Matrix SDK][sdk].
-
-## Recording a demo
-
-The good shot is the **back of the phone** during a route — that needs an
-external camera. For the in-app UI:
-
-```sh
-adb shell screenrecord /sdcard/demo.mp4   # Ctrl-C to stop
-adb pull /sdcard/demo.mp4
-```
 
 ## Credits
 
