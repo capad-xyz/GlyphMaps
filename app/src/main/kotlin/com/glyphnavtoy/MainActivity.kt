@@ -71,6 +71,9 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.lifecycle.Lifecycle
+import androidx.lifecycle.LifecycleEventObserver
+import androidx.lifecycle.compose.LocalLifecycleOwner
 import com.glyphnavtoy.capture.CaptureWriter
 import com.glyphnavtoy.glyph.AnimationMode
 import com.glyphnavtoy.glyph.GlyphSettings
@@ -85,6 +88,7 @@ import com.glyphnavtoy.service.MapsNotificationListener
 import com.glyphnavtoy.ui.GlyphDial
 import com.glyphnavtoy.ui.GlyphMark
 import com.glyphnavtoy.ui.GlyphMatrix
+import com.glyphnavtoy.ui.HomeScreen
 import com.glyphnavtoy.ui.theme.GlyphColors
 import com.glyphnavtoy.ui.theme.GlyphFonts
 import com.glyphnavtoy.ui.theme.GlyphNavToyTheme
@@ -109,7 +113,7 @@ class MainActivity : ComponentActivity() {
                         .statusBarsPadding()
                         .navigationBarsPadding(),
                 ) {
-                    ControlPanel()
+                    HomeScreen()
                 }
             }
         }
@@ -117,137 +121,37 @@ class MainActivity : ComponentActivity() {
 }
 
 // ============================================================================
-// Root
+// Lifecycle helper
 // ============================================================================
 
+/**
+ * Bumps on every ON_RESUME. Key permission reads off this so returning from
+ * system Settings (e.g. after granting Notification Access) recomposes with
+ * fresh state instead of showing the stale pre-grant value.
+ */
 @Composable
-private fun ControlPanel() {
-    val ctx = LocalContext.current
-
-    var maneuver by remember { mutableStateOf(Maneuver.STRAIGHT) }
-    var distance by remember { mutableFloatStateOf(250f) }
-    var street by remember { mutableStateOf<String?>(null) }
-    var instruction by remember { mutableStateOf<String?>(null) }
-    var mode by remember {
-        mutableStateOf(if (GlyphSettings.flowing) AnimationMode.FLOWING else AnimationMode.STATIC)
+internal fun rememberResumeKey(): Int {
+    val owner = LocalLifecycleOwner.current
+    var key by remember { mutableIntStateOf(0) }
+    androidx.compose.runtime.DisposableEffect(owner) {
+        val obs = LifecycleEventObserver { _, e -> if (e == Lifecycle.Event.ON_RESUME) key++ }
+        owner.lifecycle.addObserver(obs)
+        onDispose { owner.lifecycle.removeObserver(obs) }
     }
-    var live by remember { mutableStateOf(false) }   // don't claim the matrix on open
-    var mask by remember { mutableStateOf(true) }
-
-    // Route sim
-    var routeIdx by remember { mutableIntStateOf(0) }
-    var running by remember { mutableStateOf(false) }
-    var stepIdx by remember { mutableIntStateOf(0) }
-
-    // Clocks
-    var offset by remember { mutableIntStateOf(0) }
-    var tick by remember { mutableIntStateOf(0) }
-
-    val manualState = NavState(maneuver, distance.roundToInt().takeIf { it > 0 }, street)
-
-    // Live Maps snapshot wins when present — the hero becomes a real product
-    // readout during navigation, and a tester otherwise.
-    val liveSnapshot by NavStateRepo.live.collectAsState()
-    val heroState = liveSnapshot?.let { NavState(it.maneuver, it.distanceMeters, it.streetName) } ?: manualState
-    val heroInstruction = if (liveSnapshot != null) null else instruction
-
-    LaunchedEffect(Unit) {
-        while (true) {
-            delay(MatrixComposer.MARQUEE_TICK_MS)
-            offset += MatrixComposer.MARQUEE_STEP
-            tick += 1
-        }
-    }
-
-    LaunchedEffect(running, routeIdx, stepIdx) {
-        if (!running) return@LaunchedEffect
-        val route = PresetRoutes.all[routeIdx]
-        val step = route.steps.getOrNull(stepIdx)
-        if (step == null) { running = false; stepIdx = 0; return@LaunchedEffect }
-        maneuver = step.maneuver
-        distance = step.distanceMeters.toFloat()
-        street = step.streetName
-        instruction = step.instruction
-        delay(step.holdMillis)
-        if (stepIdx + 1 >= route.steps.size) { running = false; stepIdx = 0 } else stepIdx += 1
-    }
-
-    LaunchedEffect(manualState, live) {
-        if (live) sendToService(ctx, manualState)
-    }
-
-    val onManeuver: (Maneuver) -> Unit = {
-        maneuver = it; running = false; street = null; instruction = null
-    }
-
-    // The user (product) build is deliberately minimal — the live preview plus
-    // the two settings a real user tunes. The dev build adds the manual
-    // override, route simulator and capture-log tools on top.
-    val isDev = BuildConfig.IS_DEV
-
-    LazyColumn(
-        modifier = Modifier.fillMaxSize().padding(horizontal = 18.dp),
-        contentPadding = PaddingValues(top = 22.dp, bottom = 40.dp),
-        verticalArrangement = Arrangement.spacedBy(30.dp),
-    ) {
-        item { Header() }
-        item {
-            Hero(
-                state = heroState, instruction = heroInstruction, mode = mode,
-                offset = offset, tick = tick,
-                idle = liveSnapshot == null && !isDev,
-                showMaskToggle = isDev, mask = mask, onMask = { mask = it },
-            )
-        }
-
-        // Settings every user keeps.
-        item { HDivider() }
-        item {
-            DisplayModeGroup(mode) {
-                mode = it; GlyphSettings.setFlowing(it == AnimationMode.FLOWING)
-            }
-        }
-        item { Brightness() }
-
-        // Dev-only toolkit: manual override, route simulator, capture log.
-        if (isDev) {
-            item { HDivider() }
-            item { DistanceGroup(distance) { distance = it } }
-            item { ManeuverGroup(maneuver, onManeuver) }
-            item { HDivider() }
-            item {
-                RouteSim(
-                    routeIdx = routeIdx,
-                    onRoute = { routeIdx = it; stepIdx = 0; running = false },
-                    running = running, stepIdx = stepIdx,
-                    onStart = { running = true },
-                    onPause = { running = false },
-                    onReset = { running = false; stepIdx = 0; street = null; instruction = null },
-                )
-            }
-            item { HDivider() }
-            item { CaptureLogCard() }
-        }
-
-        item { HDivider() }
-        item {
-            SystemFooter(
-                showSync = isDev,
-                live = live, onLive = { live = it },
-                onPush = { sendToService(ctx, manualState) },
-                onStop = { stopService(ctx); live = false },
-            )
-        }
-        item { AppFooter() }
-    }
+    return key
 }
 
 // ============================================================================
 // Header
 // ============================================================================
 
+/**
+ * App header. The status dot is honest: NAV pulses only during a live route,
+ * READY means the notification listener is granted, SETUP means it isn't.
+ * (There is no GPS in this app — never claim one.)
+ */
 @Composable
-private fun Header() {
+internal fun Header(navActive: Boolean, listenerGranted: Boolean) {
     Row(
         modifier = Modifier.fillMaxWidth(),
         verticalAlignment = Alignment.CenterVertically,
@@ -261,7 +165,11 @@ private fun Header() {
                 fontSize = 24.sp, color = GlyphColors.Text,
             )
         }
-        StatusDot(label = "GPS", color = GlyphColors.Gps, live = true)
+        when {
+            navActive -> StatusDot(label = "NAV", color = GlyphColors.Accent, live = true)
+            listenerGranted -> StatusDot(label = "READY", color = GlyphColors.Gps, live = false)
+            else -> StatusDot(label = "SETUP", color = GlyphColors.TextFaint, live = false)
+        }
     }
 }
 
@@ -270,7 +178,7 @@ private fun Header() {
 // ============================================================================
 
 @Composable
-private fun Hero(
+internal fun Hero(
     state: NavState,
     instruction: String?,
     mode: AnimationMode,
@@ -279,7 +187,10 @@ private fun Hero(
     mask: Boolean,
     onMask: (Boolean) -> Unit,
     idle: Boolean = false,
+    idleReady: Boolean = true,
     showMaskToggle: Boolean = true,
+    eta: String? = null,
+    routeProgress: Float? = null,
 ) {
     val dist = state.shortDistance()
     val isK = dist?.endsWith("k") == true
@@ -343,15 +254,30 @@ private fun Hero(
 
         Column(modifier = Modifier.fillMaxWidth(), horizontalAlignment = Alignment.CenterHorizontally) {
             if (idle) {
-                Text(
-                    "Waiting for navigation", fontFamily = GlyphFonts.Grotesk, fontSize = 21.sp,
-                    color = GlyphColors.Text, textAlign = TextAlign.Center,
-                )
-                Spacer(Modifier.height(14.dp))
-                Text(
-                    "START A ROUTE IN GOOGLE MAPS", fontFamily = GlyphFonts.Mono, fontSize = 9.5.sp,
-                    letterSpacing = 2.4.sp, color = GlyphColors.TextFaint, textAlign = TextAlign.Center,
-                )
+                if (idleReady) {
+                    Text(
+                        "Ready for your next route", fontFamily = GlyphFonts.Grotesk, fontSize = 21.sp,
+                        color = GlyphColors.Text, textAlign = TextAlign.Center,
+                    )
+                    Spacer(Modifier.height(14.dp))
+                    Row(verticalAlignment = Alignment.CenterVertically, horizontalArrangement = Arrangement.spacedBy(10.dp)) {
+                        IdleStep("1", "ROUTE IN MAPS")
+                        IdleArrow()
+                        IdleStep("2", "PHONE FACE-DOWN")
+                        IdleArrow()
+                        IdleStep("3", "GLYPHS ON")
+                    }
+                } else {
+                    Text(
+                        "Almost there", fontFamily = GlyphFonts.Grotesk, fontSize = 21.sp,
+                        color = GlyphColors.Text, textAlign = TextAlign.Center,
+                    )
+                    Spacer(Modifier.height(14.dp))
+                    Text(
+                        "FINISH SETUP BELOW ↓", fontFamily = GlyphFonts.Mono, fontSize = 9.5.sp,
+                        letterSpacing = 2.4.sp, color = GlyphColors.Accent, textAlign = TextAlign.Center,
+                    )
+                }
                 return@Column
             }
             Text(
@@ -383,22 +309,65 @@ private fun Hero(
                         modifier = Modifier.padding(bottom = 8.dp),
                     )
                 }
-                Spacer(Modifier.height(14.dp))
-                Row(verticalAlignment = Alignment.CenterVertically, horizontalArrangement = Arrangement.spacedBy(8.dp)) {
-                    Box(Modifier.size(5.dp).clip(CircleShape).background(GlyphColors.TextFaint))
-                    Text(
-                        (state.nextStreet ?: "Manual override").uppercase(),
-                        fontFamily = GlyphFonts.Mono, fontSize = 10.5.sp, letterSpacing = 1.4.sp,
-                        color = GlyphColors.TextFaint,
-                    )
-                    if (mode == AnimationMode.FLOWING) {
-                        Text("· SWEEP", fontFamily = GlyphFonts.Mono, fontSize = 10.5.sp,
-                            letterSpacing = 1.4.sp, color = GlyphColors.Accent)
+                if (state.nextStreet != null || mode == AnimationMode.FLOWING) {
+                    Spacer(Modifier.height(14.dp))
+                    Row(verticalAlignment = Alignment.CenterVertically, horizontalArrangement = Arrangement.spacedBy(8.dp)) {
+                        state.nextStreet?.let { street ->
+                            Box(Modifier.size(5.dp).clip(CircleShape).background(GlyphColors.TextFaint))
+                            Text(
+                                street.uppercase(),
+                                fontFamily = GlyphFonts.Mono, fontSize = 10.5.sp, letterSpacing = 1.4.sp,
+                                color = GlyphColors.TextFaint,
+                            )
+                        }
+                        if (mode == AnimationMode.FLOWING) {
+                            Text(if (state.nextStreet != null) "· SWEEP" else "SWEEP",
+                                fontFamily = GlyphFonts.Mono, fontSize = 10.5.sp,
+                                letterSpacing = 1.4.sp, color = GlyphColors.Accent)
+                        }
+                    }
+                }
+                // Trip context — parsed straight from the Maps notification.
+                if (!idle && (eta != null || routeProgress != null)) {
+                    Spacer(Modifier.height(16.dp))
+                    routeProgress?.let { p ->
+                        Box(Modifier.fillMaxWidth().height(2.dp).background(Color.White.copy(alpha = 0.12f))) {
+                            Box(Modifier.fillMaxWidth(p.coerceIn(0f, 1f)).height(2.dp).background(GlyphColors.Accent))
+                        }
+                        Spacer(Modifier.height(8.dp))
+                    }
+                    eta?.let {
+                        Text(
+                            it.uppercase(),
+                            fontFamily = GlyphFonts.Mono, fontSize = 10.5.sp, letterSpacing = 1.6.sp,
+                            color = GlyphColors.TextDim,
+                        )
                     }
                 }
             }
         }
     }
+}
+
+@Composable
+private fun IdleStep(n: String, label: String) {
+    Row(verticalAlignment = Alignment.CenterVertically, horizontalArrangement = Arrangement.spacedBy(5.dp)) {
+        Box(
+            Modifier.size(15.dp).clip(CircleShape).border(1.dp, GlyphColors.Line, CircleShape),
+            contentAlignment = Alignment.Center,
+        ) {
+            Text(n, fontFamily = GlyphFonts.Mono, fontSize = 8.5.sp, color = GlyphColors.TextDim)
+        }
+        Text(
+            label, fontFamily = GlyphFonts.Mono, fontSize = 8.5.sp,
+            letterSpacing = 1.2.sp, color = GlyphColors.TextFaint,
+        )
+    }
+}
+
+@Composable
+private fun IdleArrow() {
+    Text("›", fontSize = 11.sp, color = GlyphColors.TextFaint)
 }
 
 // ============================================================================
@@ -430,7 +399,7 @@ private val DIST_TICKS = listOf("Now", "300m", "600m", "1km", "1.5km")
 
 /** Static vs sweeping animation — a real user preference, shown in both builds. */
 @Composable
-private fun DisplayModeGroup(mode: AnimationMode, onMode: (AnimationMode) -> Unit) {
+internal fun DisplayModeGroup(mode: AnimationMode, onMode: (AnimationMode) -> Unit) {
     Group(label = "LED display mode") {
         Segmented(
             options = listOf(
@@ -444,7 +413,7 @@ private fun DisplayModeGroup(mode: AnimationMode, onMode: (AnimationMode) -> Uni
 
 /** Manual distance override — dev tool. */
 @Composable
-private fun DistanceGroup(distance: Float, onDistance: (Float) -> Unit) {
+internal fun DistanceGroup(distance: Float, onDistance: (Float) -> Unit) {
     Group(
         label = "Distance to turn",
         right = {
@@ -469,7 +438,7 @@ private fun DistanceGroup(distance: Float, onDistance: (Float) -> Unit) {
 
 /** Manual maneuver picker — dev tool. */
 @Composable
-private fun ManeuverGroup(maneuver: Maneuver, onManeuver: (Maneuver) -> Unit) {
+internal fun ManeuverGroup(maneuver: Maneuver, onManeuver: (Maneuver) -> Unit) {
     Group(label = "Maneuver direction") {
         Column(verticalArrangement = Arrangement.spacedBy(8.dp)) {
             MROWS.chunked(3).forEach { rowItems ->
@@ -492,7 +461,7 @@ private fun ManeuverGroup(maneuver: Maneuver, onManeuver: (Maneuver) -> Unit) {
  * state for the sliders, writes straight through to [GlyphSettings].
  */
 @Composable
-private fun Brightness() {
+internal fun Brightness() {
     var head by remember { mutableIntStateOf(GlyphSettings.head) }
     var tail by remember { mutableIntStateOf(GlyphSettings.tail) }
 
@@ -575,7 +544,7 @@ private fun ManeuverCell(maneuver: Maneuver, selected: Boolean, onClick: () -> U
 // ============================================================================
 
 @Composable
-private fun RouteSim(
+internal fun RouteSim(
     routeIdx: Int,
     onRoute: (Int) -> Unit,
     running: Boolean,
@@ -656,7 +625,7 @@ private fun RouteSim(
 // ============================================================================
 
 @Composable
-private fun SystemFooter(
+internal fun SystemFooter(
     showSync: Boolean,
     live: Boolean,
     onLive: (Boolean) -> Unit,
@@ -699,15 +668,19 @@ private fun SystemFooter(
     }
 }
 
-/** Quiet bottom-of-screen credit + privacy note. */
+/** Where the Play-required privacy policy is hosted. */
+internal const val PRIVACY_POLICY_URL = "https://glyphmaps.capad.fyi/privacy"
+
+/** Quiet bottom-of-screen credit + privacy note + policy link. */
 @Composable
-private fun AppFooter() {
+internal fun AppFooter() {
+    val ctx = LocalContext.current
     Column(
         modifier = Modifier.fillMaxWidth().padding(top = 4.dp),
         horizontalAlignment = Alignment.CenterHorizontally,
     ) {
         Text(
-            "GLYPH MAPS · v${BuildConfig.VERSION_NAME}",
+            "GLYPHMAPS · v${BuildConfig.VERSION_NAME}",
             fontFamily = GlyphFonts.Mono, fontSize = 9.5.sp, letterSpacing = 1.6.sp,
             color = GlyphColors.TextFaint,
         )
@@ -716,6 +689,28 @@ private fun AppFooter() {
             "Independent app · reads only Google Maps navigation · on-device only",
             fontFamily = GlyphFonts.Grotesk, fontSize = 11.sp, color = GlyphColors.TextFaint,
             textAlign = TextAlign.Center,
+        )
+        Spacer(Modifier.height(8.dp))
+        Text(
+            "PRIVACY POLICY ↗",
+            fontFamily = GlyphFonts.Mono, fontSize = 9.5.sp, letterSpacing = 1.6.sp,
+            color = GlyphColors.TextDim,
+            modifier = Modifier
+                .clickable {
+                    runCatching {
+                        ctx.startActivity(
+                            Intent(Intent.ACTION_VIEW, android.net.Uri.parse(PRIVACY_POLICY_URL))
+                                .addFlags(Intent.FLAG_ACTIVITY_NEW_TASK),
+                        )
+                    }
+                }
+                .padding(6.dp),
+        )
+        Spacer(Modifier.height(2.dp))
+        Text(
+            "~ dw, we don't collect any of your data. none. zero.",
+            fontFamily = GlyphFonts.Grotesk, fontSize = 10.5.sp,
+            color = GlyphColors.TextFaint, textAlign = TextAlign.Center,
         )
     }
 }
@@ -726,7 +721,7 @@ private fun AppFooter() {
  * Google Maps in real time without `adb logcat`.
  */
 @Composable
-private fun CaptureLogCard() {
+internal fun CaptureLogCard() {
     val ctx = LocalContext.current
     val writer = remember { CaptureWriter(ctx) }
     var lines by remember { mutableStateOf<List<String>>(emptyList()) }
@@ -782,7 +777,7 @@ private fun CaptureLogCard() {
 }
 
 @Composable
-private fun SysRow(label: String, granted: Boolean, onFix: () -> Unit) {
+internal fun SysRow(label: String, granted: Boolean, onFix: () -> Unit) {
     Row(
         modifier = Modifier.fillMaxWidth().padding(vertical = 11.dp),
         verticalAlignment = Alignment.CenterVertically,
@@ -818,12 +813,12 @@ private fun SysRow(label: String, granted: Boolean, onFix: () -> Unit) {
 // ============================================================================
 
 @Composable
-private fun HDivider() {
+internal fun HDivider() {
     Box(Modifier.fillMaxWidth().height(1.dp).background(GlyphColors.Line))
 }
 
 @Composable
-private fun SectionLabel(text: String, modifier: Modifier = Modifier) {
+internal fun SectionLabel(text: String, modifier: Modifier = Modifier) {
     Text(
         text.uppercase(), modifier = modifier,
         fontFamily = GlyphFonts.Mono, fontWeight = FontWeight.Bold,
@@ -832,7 +827,7 @@ private fun SectionLabel(text: String, modifier: Modifier = Modifier) {
 }
 
 @Composable
-private fun Group(label: String, right: (@Composable () -> Unit)? = null, content: @Composable () -> Unit) {
+internal fun Group(label: String, right: (@Composable () -> Unit)? = null, content: @Composable () -> Unit) {
     Column {
         Row(
             modifier = Modifier.fillMaxWidth().padding(bottom = 14.dp),
@@ -847,7 +842,7 @@ private fun Group(label: String, right: (@Composable () -> Unit)? = null, conten
 }
 
 @Composable
-private fun StatusDot(label: String, color: Color, live: Boolean) {
+internal fun StatusDot(label: String, color: Color, live: Boolean) {
     val pulse = rememberInfiniteTransition(label = "pulse")
     val a by pulse.animateFloat(
         initialValue = 1f, targetValue = 0.35f,
@@ -861,7 +856,7 @@ private fun StatusDot(label: String, color: Color, live: Boolean) {
 }
 
 @Composable
-private fun <T> Segmented(options: List<Pair<T, String>>, value: T, onChange: (T) -> Unit) {
+internal fun <T> Segmented(options: List<Pair<T, String>>, value: T, onChange: (T) -> Unit) {
     Row(
         modifier = Modifier.fillMaxWidth()
             .clip(RoundedCornerShape(GlyphColors.GlyphRadius.dp))
@@ -889,7 +884,7 @@ private fun <T> Segmented(options: List<Pair<T, String>>, value: T, onChange: (T
 }
 
 @Composable
-private fun GlyphSlider(value: Float, min: Float, max: Float, onChange: (Float) -> Unit) {
+internal fun GlyphSlider(value: Float, min: Float, max: Float, onChange: (Float) -> Unit) {
     var widthPx by remember { mutableFloatStateOf(1f) }
     val frac = ((value - min) / (max - min)).coerceIn(0f, 1f)
     fun emit(x: Float) = onChange((min + (x / widthPx) * (max - min)).coerceIn(min, max))
@@ -923,7 +918,7 @@ private fun GlyphSlider(value: Float, min: Float, max: Float, onChange: (Float) 
 }
 
 @Composable
-private fun GlyphToggle(on: Boolean, onChange: (Boolean) -> Unit) {
+internal fun GlyphToggle(on: Boolean, onChange: (Boolean) -> Unit) {
     Box(
         modifier = Modifier
             .size(width = 50.dp, height = 28.dp)
@@ -942,10 +937,10 @@ private fun GlyphToggle(on: Boolean, onChange: (Boolean) -> Unit) {
     }
 }
 
-private enum class BtnVariant { PRIMARY, GHOST, QUIET }
+internal enum class BtnVariant { PRIMARY, GHOST, QUIET }
 
 @Composable
-private fun Btn(label: String, variant: BtnVariant, modifier: Modifier = Modifier, onClick: () -> Unit) {
+internal fun Btn(label: String, variant: BtnVariant, modifier: Modifier = Modifier, onClick: () -> Unit) {
     val bg = if (variant == BtnVariant.PRIMARY) GlyphColors.Accent else Color.Transparent
     val fg = when (variant) {
         BtnVariant.PRIMARY -> GlyphColors.AccentText
@@ -975,7 +970,7 @@ private fun Btn(label: String, variant: BtnVariant, modifier: Modifier = Modifie
 // Service + permission helpers
 // ============================================================================
 
-private fun sendToService(ctx: Context, state: NavState) {
+internal fun sendToService(ctx: Context, state: NavState) {
     val intent = Intent(ctx, GlyphRenderService::class.java).apply {
         putExtra(GlyphRenderService.EXTRA_MANEUVER, state.maneuver.name)
         state.distanceMeters?.let { putExtra(GlyphRenderService.EXTRA_DISTANCE_M, it) }
@@ -984,11 +979,11 @@ private fun sendToService(ctx: Context, state: NavState) {
     else ctx.startService(intent)
 }
 
-private fun stopService(ctx: Context) {
+internal fun stopService(ctx: Context) {
     ctx.stopService(Intent(ctx, GlyphRenderService::class.java))
 }
 
-private fun isNotificationAccessGranted(ctx: Context): Boolean {
+internal fun isNotificationAccessGranted(ctx: Context): Boolean {
     val flat = Settings.Secure.getString(ctx.contentResolver, "enabled_notification_listeners") ?: return false
     val ours = "${ctx.packageName}/${MapsNotificationListener::class.java.name}"
     return flat.split(':').any { it == ours }
