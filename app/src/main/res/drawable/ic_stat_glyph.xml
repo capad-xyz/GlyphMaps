@@ -1,0 +1,33 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!--
+  Status-bar icon for the foreground-service notification.
+
+  Same dot-matrix up-chevron as the launcher icon, redrawn for the 24dp
+  status-bar grid. Status icons are alpha-only (the system tints them), so
+  everything is white; the shaft keeps the launcher's 0.62 tail alpha.
+-->
+<vector xmlns:android="http://schemas.android.com/apk/res/android"
+    android:width="24dp"
+    android:height="24dp"
+    android:viewportWidth="24"
+    android:viewportHeight="24">
+
+    <!-- Head: chevron tip + inner + outer arms. -->
+    <path
+        android:fillColor="#FFFFFFFF"
+        android:pathData="
+            M9.8,4.5 a2.2,2.2 0 1,0 4.4,0 a2.2,2.2 0 1,0 -4.4,0 z
+            M5.8,8 a2.2,2.2 0 1,0 4.4,0 a2.2,2.2 0 1,0 -4.4,0 z
+            M13.8,8 a2.2,2.2 0 1,0 4.4,0 a2.2,2.2 0 1,0 -4.4,0 z
+            M1.8,11.5 a2.2,2.2 0 1,0 4.4,0 a2.2,2.2 0 1,0 -4.4,0 z
+            M17.8,11.5 a2.2,2.2 0 1,0 4.4,0 a2.2,2.2 0 1,0 -4.4,0 z" />
+
+    <!-- Tail: three-dot shaft at launcher tail alpha. -->
+    <path
+        android:fillColor="#FFFFFFFF"
+        android:fillAlpha="0.62"
+        android:pathData="
+            M9.8,11.5 a2.2,2.2 0 1,0 4.4,0 a2.2,2.2 0 1,0 -4.4,0 z
+            M9.8,15.5 a2.2,2.2 0 1,0 4.4,0 a2.2,2.2 0 1,0 -4.4,0 z
+            M9.8,19.5 a2.2,2.2 0 1,0 4.4,0 a2.2,2.2 0 1,0 -4.4,0 z" />
+</vector>

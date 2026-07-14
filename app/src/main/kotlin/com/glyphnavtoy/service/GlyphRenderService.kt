@@ -8,18 +8,21 @@ package com.glyphnavtoy.service
 import android.app.Notification
 import android.app.NotificationChannel
 import android.app.NotificationManager
+import android.app.PendingIntent
 import android.app.Service
 import android.content.Intent
 import android.content.pm.ServiceInfo
 import android.os.Build
 import android.os.IBinder
 import android.util.Log
+import com.glyphnavtoy.MainActivity
 import com.glyphnavtoy.R
 import com.glyphnavtoy.glyph.GlyphRenderer
 import com.glyphnavtoy.glyph.Maneuver
 import com.glyphnavtoy.glyph.MatrixComposer
 import com.glyphnavtoy.glyph.StartupAnimations
 import com.glyphnavtoy.nav.NavState
+import com.glyphnavtoy.nav.instructionVerb
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.Job
@@ -175,16 +178,22 @@ class GlyphRenderService : Service() {
     }
 
     private fun updateOngoingNotification(state: NavState) {
-        val maneuver = state.maneuver.name.replace('_', ' ').lowercase()
-        val distance = state.distanceMeters?.let { " · ${it} m" } ?: ""
-        startForegroundWith(buildNotification("$maneuver$distance"))
+        val verb = state.maneuver.instructionVerb()
+        val distance = state.distanceMeters?.let { " · $it m" } ?: ""
+        startForegroundWith(buildNotification("$verb$distance"))
     }
 
     private fun buildNotification(contentText: String): Notification {
+        val tapIntent = PendingIntent.getActivity(
+            this, 0,
+            Intent(this, MainActivity::class.java).addFlags(Intent.FLAG_ACTIVITY_SINGLE_TOP),
+            PendingIntent.FLAG_IMMUTABLE,
+        )
         return Notification.Builder(this, CHANNEL_ID)
             .setContentTitle(getString(R.string.app_name))
             .setContentText(contentText)
-            .setSmallIcon(android.R.drawable.ic_menu_compass)
+            .setSmallIcon(R.drawable.ic_stat_glyph)
+            .setContentIntent(tapIntent)
             .setOngoing(true)
             .setOnlyAlertOnce(true)
             .build()
@@ -193,10 +202,10 @@ class GlyphRenderService : Service() {
     private fun createNotificationChannel() {
         val channel = NotificationChannel(
             CHANNEL_ID,
-            "Glyph Nav Status",
+            "GlyphMaps navigation",
             NotificationManager.IMPORTANCE_LOW,
         ).apply {
-            description = "Keeps the Glyph nav service running."
+            description = "Shows while GlyphMaps is driving the Glyph Matrix during navigation."
             setShowBadge(false)
         }
         getSystemService(NotificationManager::class.java).createNotificationChannel(channel)
