@@ -1,0 +1,89 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>GlyphMaps — Privacy Policy</title>
+<style>
+  :root{--bg:#0a0a0c;--txt:#e9e9ec;--dim:#9a9aa4;--accent:#ffe9b5;--line:#2a2a31}
+  *{box-sizing:border-box;margin:0;padding:0}
+  body{background:var(--bg);color:var(--txt);font:16px/1.7 system-ui,-apple-system,'Segoe UI',sans-serif;padding:48px 20px}
+  main{max-width:680px;margin:0 auto}
+  h1{font-size:26px;margin-bottom:4px}
+  .sub{color:var(--dim);font-size:13px;margin-bottom:36px}
+  h2{font-size:17px;margin:32px 0 10px;color:var(--accent)}
+  p,li{color:var(--txt)}
+  ul{padding-left:22px;margin:8px 0}
+  .card{border:1px solid var(--line);border-radius:12px;padding:18px 20px;margin:24px 0;color:var(--dim)}
+  a{color:var(--accent)}
+  footer{margin-top:48px;padding-top:16px;border-top:1px solid var(--line);color:var(--dim);font-size:13px}
+</style>
+</head>
+<body>
+<main>
+  <h1>GlyphMaps — Privacy Policy</h1>
+  <div class="sub">Effective 14 July 2026 · applies to the GlyphMaps Android app (com.glyphnavtoy)</div>
+
+  <div class="card">
+    The short version: GlyphMaps has no servers, no accounts, no analytics, and
+    no ads. It reads one thing — Google Maps' turn-by-turn navigation
+    notifications — entirely on your phone, to draw the current maneuver on
+    your Nothing Phone's Glyph Matrix. Nothing you do ever leaves the device.
+  </div>
+
+  <h2>What the app accesses</h2>
+  <p>
+    GlyphMaps uses Android's <em>Notification Access</em> (a
+    NotificationListenerService). With your permission, granted through system
+    settings, it reads the content of <strong>Google Maps navigation
+    notifications only</strong> — the maneuver, distance to the turn, street
+    name, ETA, and route progress. Notifications from every other app are
+    ignored and never inspected.
+  </p>
+
+  <h2>How that data is used</h2>
+  <ul>
+    <li>Parsed in memory, on the device, to render the turn arrow and distance on the Glyph Matrix LEDs.</li>
+    <li>Shown inside the app while you navigate (the same information Google Maps is already showing you).</li>
+    <li>Discarded when navigation ends. It is not stored, logged, or written to disk in the release app.</li>
+  </ul>
+
+  <h2>What is collected or shared</h2>
+  <p>
+    Nothing. GlyphMaps collects no personal data, no location data (it has no
+    location permission), no identifiers, and no usage analytics. It makes no
+    network requests: there is no server component, no third-party SDK that
+    transmits data, and no advertising. Data cannot be sold or shared because
+    none is collected.
+  </p>
+
+  <h2>Data stored on your device</h2>
+  <p>
+    Your preferences (LED brightness, display mode, whether onboarding is
+    complete) are saved in the app's private storage on your phone and are
+    deleted when you uninstall the app.
+  </p>
+
+  <h2>Children</h2>
+  <p>GlyphMaps is not directed at children and collects no data from anyone.</p>
+
+  <h2>Changes</h2>
+  <p>
+    If this policy changes, the updated version will be posted at this address
+    with a new effective date. Since the app collects nothing, changes are
+    expected to be rare and editorial.
+  </p>
+
+  <h2>Contact</h2>
+  <p>
+    Questions: <a href="mailto:capad.xyz@gmail.com">capad.xyz@gmail.com</a>
+  </p>
+
+  <footer>
+    GlyphMaps is an independent open-source project (AGPL-3.0) and is not
+    affiliated with Google or Nothing Technology Limited. Google Maps is a
+    trademark of Google LLC; Glyph Matrix is a trademark of Nothing.
+  </footer>
+</main>
+</body>
+</html>
