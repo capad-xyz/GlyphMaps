@@ -356,7 +356,18 @@ private fun IdleStep(n: String, label: String) {
             Modifier.size(15.dp).clip(CircleShape).border(1.dp, GlyphColors.Line, CircleShape),
             contentAlignment = Alignment.Center,
         ) {
-            Text(n, fontFamily = GlyphFonts.Mono, fontSize = 8.5.sp, color = GlyphColors.TextDim)
+            // Trim font padding/line metrics or the digit sits low in the circle.
+            Text(
+                n, fontFamily = GlyphFonts.Mono, fontSize = 8.5.sp, color = GlyphColors.TextDim,
+                textAlign = TextAlign.Center,
+                style = androidx.compose.ui.text.TextStyle(
+                    platformStyle = androidx.compose.ui.text.PlatformTextStyle(includeFontPadding = false),
+                    lineHeightStyle = androidx.compose.ui.text.style.LineHeightStyle(
+                        androidx.compose.ui.text.style.LineHeightStyle.Alignment.Center,
+                        androidx.compose.ui.text.style.LineHeightStyle.Trim.Both,
+                    ),
+                ),
+            )
         }
         Text(
             label, fontFamily = GlyphFonts.Mono, fontSize = 8.5.sp,
