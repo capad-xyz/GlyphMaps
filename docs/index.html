@@ -1,0 +1,245 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>GlyphMaps — Turn-by-turn navigation on your Nothing Phone's Glyph Matrix</title>
+<meta name="description" content="GlyphMaps mirrors Google Maps' next turn onto the Nothing Phone (4a) Pro's 137-LED Glyph Matrix. Glance at the back of your phone instead of the screen. Free, open source, works entirely offline.">
+
+<meta property="og:type" content="website">
+<meta property="og:url" content="https://glyphmaps.capad.fyi/">
+<meta property="og:title" content="GlyphMaps — turn-by-turn on the back of your phone">
+<meta property="og:description" content="Mirrors Google Maps' next maneuver onto the Nothing Phone (4a) Pro's Glyph Matrix. Free, open source, no network permission.">
+<meta property="og:image" content="https://glyphmaps.capad.fyi/screenshots/hero.png">
+<meta name="twitter:card" content="summary_large_image">
+<meta name="theme-color" content="#0a0a0c">
+<link rel="canonical" href="https://glyphmaps.capad.fyi/">
+
+<style>
+  :root{
+    --bg:#0a0a0c; --txt:#e9e9ec; --dim:#9a9aa4;
+    --accent:#ffe9b5; --line:#2a2a31; --card:#111116;
+  }
+  *{box-sizing:border-box;margin:0;padding:0}
+  html{scroll-behavior:smooth}
+  body{
+    background:var(--bg); color:var(--txt);
+    font:16px/1.7 system-ui,-apple-system,'Segoe UI',sans-serif;
+    -webkit-font-smoothing:antialiased;
+  }
+  .wrap{max-width:900px;margin:0 auto;padding:0 20px}
+  a{color:var(--accent)}
+
+  /* hero */
+  header{padding:72px 0 56px;text-align:center}
+  .eyebrow{
+    color:var(--dim);font-size:12px;letter-spacing:.18em;
+    text-transform:uppercase;margin-bottom:18px
+  }
+  h1{font-size:clamp(34px,7vw,58px);line-height:1.08;letter-spacing:-.02em}
+  h1 .accent{color:var(--accent)}
+  .tagline{
+    color:var(--dim);font-size:clamp(16px,2.4vw,19px);
+    max-width:560px;margin:20px auto 0
+  }
+
+  .cta{display:flex;gap:12px;justify-content:center;flex-wrap:wrap;margin:36px 0 14px}
+  .btn{
+    display:inline-block;padding:13px 26px;border-radius:10px;
+    text-decoration:none;font-weight:600;font-size:15px;transition:.15s
+  }
+  .btn-primary{background:var(--accent);color:#151109}
+  .btn-primary:hover{filter:brightness(1.08)}
+  .btn-ghost{border:1px solid var(--line);color:var(--txt)}
+  .btn-ghost:hover{border-color:var(--dim)}
+  .meta{color:var(--dim);font-size:13px}
+
+  /* media */
+  .media{margin:52px 0 0}
+  video,.shot{
+    width:100%;border-radius:14px;border:1px solid var(--line);display:block
+  }
+  .shots{
+    display:grid;grid-template-columns:repeat(auto-fit,minmax(230px,1fr));
+    gap:16px;margin-top:16px
+  }
+  figure{margin:0}
+  figcaption{color:var(--dim);font-size:13px;margin-top:8px;text-align:center}
+
+  /* sections */
+  section{padding:56px 0;border-top:1px solid var(--line)}
+  h2{font-size:22px;margin-bottom:8px}
+  .lede{color:var(--dim);margin-bottom:26px}
+
+  .grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(250px,1fr));gap:16px}
+  .card{
+    background:var(--card);border:1px solid var(--line);
+    border-radius:12px;padding:20px
+  }
+  .card h3{font-size:15px;color:var(--accent);margin-bottom:6px}
+  .card p{color:var(--dim);font-size:14.5px}
+
+  ol{padding-left:20px}
+  ol li{margin-bottom:14px}
+  ol li strong{color:var(--accent)}
+  ul.plain{list-style:none;padding:0}
+  ul.plain li{padding:9px 0;border-bottom:1px solid var(--line);color:var(--dim)}
+  ul.plain li:last-child{border-bottom:0}
+  ul.plain b{color:var(--txt);font-weight:600}
+
+  .note{
+    border:1px solid var(--line);border-left:3px solid var(--accent);
+    border-radius:0 10px 10px 0;padding:16px 18px;margin-top:22px;
+    color:var(--dim);font-size:14.5px
+  }
+
+  footer{
+    padding:40px 0 60px;border-top:1px solid var(--line);
+    color:var(--dim);font-size:13px;text-align:center
+  }
+  footer p{margin-bottom:10px}
+</style>
+</head>
+<body>
+
+<div class="wrap">
+
+  <header>
+    <div class="eyebrow">Nothing Phone (4a) Pro</div>
+    <h1>Your next turn,<br><span class="accent">on the back of your phone.</span></h1>
+    <p class="tagline">
+      GlyphMaps mirrors Google Maps' next maneuver — the arrow and the distance
+      to it — onto the 137-LED Glyph Matrix. Glance at the back of your phone
+      instead of the screen.
+    </p>
+
+    <div class="cta">
+      <a class="btn btn-primary" href="https://github.com/capad-xyz/GlyphMaps/releases/latest">Download APK</a>
+      <a class="btn btn-ghost" href="https://github.com/capad-xyz/GlyphMaps">View source</a>
+    </div>
+    <p class="meta">Free · open source (AGPL-3.0) · no ads · no accounts</p>
+
+    <div class="media">
+      <video src="promo.mp4" autoplay loop muted playsinline poster="screenshots/hero.png"></video>
+      <div class="shots">
+        <figure>
+          <img class="shot" src="screenshots/app.png" alt="GlyphMaps main screen showing live preview, display mode and brightness controls">
+          <figcaption>Live preview, display mode, brightness</figcaption>
+        </figure>
+        <figure>
+          <img class="shot" src="screenshots/hero.png" alt="The next-turn readout showing a maneuver arrow and distance">
+          <figcaption>The next-turn readout</figcaption>
+        </figure>
+      </div>
+    </div>
+  </header>
+
+  <section>
+    <h2>What it does</h2>
+    <p class="lede">It mirrors Maps. It doesn't route.</p>
+    <div class="grid">
+      <div class="card">
+        <h3>Every maneuver</h3>
+        <p>Turn left/right, sharp turns, keep left/right, forks, roundabouts,
+           U-turns and arrival — drawn as a clean dot-matrix arrow.</p>
+      </div>
+      <div class="card">
+        <h3>Distance to the turn</h3>
+        <p>Scrolls beneath the arrow — “300m”, “1.5k” — counting down as you
+           approach.</p>
+      </div>
+      <div class="card">
+        <h3>No setup, no keys</h3>
+        <p>Reads directions straight from Google Maps' Live Updates
+           notification. No API key, no account, no sign-in.</p>
+      </div>
+      <div class="card">
+        <h3>Gives the Matrix back</h3>
+        <p>Only claims the display while you're actually navigating. End the
+           route and your usual Glyph toy returns.</p>
+      </div>
+      <div class="card">
+        <h3>Runs in the background</h3>
+        <p>The app doesn't need to stay open. Start a route, flip the phone
+           over, drive.</p>
+      </div>
+      <div class="card">
+        <h3>Yours to change</h3>
+        <p>Independent head and tail LED brightness, plus Static Glow or
+           Sweeping Flow display modes.</p>
+      </div>
+    </div>
+  </section>
+
+  <section>
+    <h2>It cannot phone home</h2>
+    <p class="lede">Not a promise — a property of the build.</p>
+    <p style="color:var(--dim);max-width:640px">
+      GlyphMaps does not request the <b style="color:var(--txt)">INTERNET</b>
+      permission. There is no network code, no analytics, no crash reporter, no
+      advertising SDK and no server. Maps' navigation text is parsed in memory,
+      turned into an arrow, and discarded. You can verify every line of that —
+      the source is public.
+    </p>
+    <p style="margin-top:16px">
+      <a href="privacy-policy.html">Read the privacy policy →</a>
+    </p>
+  </section>
+
+  <section>
+    <h2>Requirements</h2>
+    <ul class="plain">
+      <li><b>Nothing Phone (4a) Pro</b> — the model with the circular 137-LED Glyph Matrix</li>
+      <li><b>Android 14 or newer</b> (minSdk 34)</li>
+      <li><b>Google Maps</b> with Live Updates — on by default in recent versions</li>
+      <li><b>Notification access</b> granted to GlyphMaps</li>
+    </ul>
+    <div class="note">
+      <b style="color:var(--txt)">Phone (3) isn't supported.</b> Its Glyph Matrix
+      is a different panel — 489 LEDs on a 25×25 grid — and GlyphMaps renders for
+      the (4a) Pro's 13×13. It's a renderer change rather than a rewrite, so if
+      there's demand it may land later.
+    </div>
+  </section>
+
+  <section>
+    <h2>Getting started</h2>
+    <ol>
+      <li><strong>Install</strong> — download the APK and tap to install (allow
+          <em>Install from unknown sources</em> if prompted), or
+          <code>adb install</code> it. You can also build from source.</li>
+      <li><strong>Grant notification access</strong> — the app links you straight
+          to the system setting on first launch. This is how it reads Maps' live
+          directions, so it's required. It's filtered to the Google Maps package
+          and the <code>navigation</code> category; everything else is ignored.</li>
+      <li><strong>Navigate</strong> — open Google Maps, start any route, flip
+          your phone over. The Matrix lights up with your next turn.</li>
+    </ol>
+    <div class="note">
+      <b style="color:var(--txt)">Only one Glyph-Matrix app at a time.</b> If you
+      run another app that drives the Matrix from notifications, grant
+      notification access to just one of them — two listeners will fight over the
+      display during navigation and the arrow will flicker.
+    </div>
+  </section>
+
+  <footer>
+    <div class="wrap">
+      <p>
+        <a href="https://github.com/capad-xyz/GlyphMaps">GitHub</a> ·
+        <a href="https://github.com/capad-xyz/GlyphMaps/releases/latest">Releases</a> ·
+        <a href="privacy-policy.html">Privacy</a> ·
+        <a href="https://github.com/capad-xyz/GlyphMaps/issues">Report a bug</a>
+      </p>
+      <p>
+        GlyphMaps is an independent open-source project (AGPL-3.0) and is not
+        affiliated with, endorsed by, or sponsored by Google LLC or Nothing
+        Technology Limited. Google Maps is a trademark of Google LLC;
+        Glyph Matrix is a trademark of Nothing Technology Limited.
+      </p>
+    </div>
+  </footer>
+
+</div>
+</body>
+</html>
