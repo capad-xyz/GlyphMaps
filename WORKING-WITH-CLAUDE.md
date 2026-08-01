@@ -83,4 +83,4 @@ What makes a hand-off land on the first try:
 | Screens (Home / Settings / Onboarding) | `app/src/main/kotlin/com/glyphnavtoy/ui/` |
 | Shared UI primitives + NavHost | `MainActivity.kt` |
 | Maps parsing + live snapshot | `service/MapsNotificationListener.kt`, `nav/NavStateRepo.kt` |
-| Privacy policy (hosted) | `https://glyphmaps.capad.fyi/privacy` (source: `docs/privacy-policy.html`) |
+| Privacy policy (hosted) | `https://glyphmaps.capad.fyi/privacy` — served by the capad.fyi Worker from Sanity, **not** from this repo. `PRIVACY_POLICY.md` here is the reference copy; keep the two in step. |

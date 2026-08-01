@@ -28,9 +28,12 @@ means resetting your Play upload key.
 
 ## 1. Real blockers (do these or the app won't be accepted)
 
-1. **Host the privacy policy.** Put `PRIVACY_POLICY.md` at a public HTTPS URL
-   (GitHub Pages, a gist, your site) and fill in `[YOUR_EMAIL]`. Required for the
-   store listing AND the in-app disclosure (notification-access apps must have one).
+1. ~~**Host the privacy policy.**~~ **Done** — it is live at
+   **https://glyphmaps.capad.fyi/privacy**, which is the URL to paste into the
+   Play listing and the one `MainActivity.kt` already opens. It is served by the
+   capad.fyi Worker out of Sanity, not by this repo; `PRIVACY_POLICY.md` is the
+   reference copy. (Was previously GitHub Pages, which never served `/privacy`
+   and had no working certificate.)
 2. **Closed testing, if this is a personal Play account created after 13 Nov 2023.**
    Google requires **≥12 testers opted in for 14 continuous days** on a closed
    track *before* you can apply for production. Org accounts (registered legal
@@ -181,7 +184,8 @@ sharing, personal-info sharing). Result: **Everyone / PEGI 3.**
 
 ## 7. Pre-launch checklist (human-only)
 
-1. [ ] Host **`PRIVACY_POLICY.md`** at an HTTPS URL; fill in `[YOUR_EMAIL]`.
+1. [x] Host **`PRIVACY_POLICY.md`** at an HTTPS URL — live at
+   https://glyphmaps.capad.fyi/privacy, contact address filled in.
 2. [ ] Add the **in-app prominent disclosure** before the Notification-Access ask (§1.3).
 3. [ ] Run `build-release.cmd`; confirm `app-user-release.aab` is produced and signed.
 4. [ ] Back up `upload-keystore.jks` + `keystore.properties` somewhere safe.

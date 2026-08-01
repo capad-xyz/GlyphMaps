@@ -19,6 +19,9 @@ your phone instead of the screen.
 
 ### [⬇️ Download the latest APK](https://github.com/capad-xyz/GlyphMaps/releases/latest)
 
+**[glyphmaps.capad.fyi](https://glyphmaps.capad.fyi)** &nbsp;·&nbsp;
+[Privacy policy](https://glyphmaps.capad.fyi/privacy)
+
 </div>
 
 ---

@@ -2,6 +2,11 @@
 
 **Last updated: 14 June 2026**
 
+> The published version lives at **https://glyphmaps.capad.fyi/privacy** — that
+> is the URL the app links to and the one to give Play. It is maintained in the
+> capad.fyi CMS; if you change the policy, change it in both places or the
+> hosted copy and this file will disagree about a legal representation.
+
 GlyphMaps ("the app", "we") displays Google Maps turn-by-turn directions on
 the rear Glyph Matrix of the Nothing Phone (4a) Pro. This policy explains
 exactly what the app accesses and what it does — and does not — do with it.
@@ -58,10 +63,12 @@ never transmitted. Clearing the app's data or uninstalling removes it.
 
 - **Notification Access** — read the Google Maps navigation notification (core
   function).
-- **Foreground Service (Special Use)** — keep the Matrix updating during a
-  route.
+- **Foreground Service**, including the special-use type
+  (`FOREGROUND_SERVICE` + `FOREGROUND_SERVICE_SPECIAL_USE`) — keep the Matrix
+  updating during a route.
 - **Post Notifications** — show the required foreground-service notification.
-- **Nothing Glyph (`com.nothing.ketchum.ENABLE`)** — draw on the Glyph Matrix.
+- **Nothing Glyph (`com.nothing.ketchum.permission.ENABLE`)** — draw on the
+  Glyph Matrix.
 
 ## Data retention
 
@@ -81,7 +88,7 @@ version will always be available at the policy URL.
 
 ## Contact
 
-Questions: **[YOUR_EMAIL]**
+Questions: **connect@capad.fyi**
 
 ---
 
