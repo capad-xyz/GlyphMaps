@@ -53,11 +53,7 @@ enum class Maneuver {
                 "sharp-left" in s -> SHARP_LEFT
                 "sharp-right" in s -> SHARP_RIGHT
 
-                "turn-left" in s || "make-a-left" in s || "take-a-left" in s ||
-                    "take-the-left" in s || "left-onto" in s -> LEFT
-                "turn-right" in s || "make-a-right" in s || "take-a-right" in s ||
-                    "take-the-right" in s || "right-onto" in s -> RIGHT
-
+                // Keep / bear / veer must beat "left-onto" / "right-onto".
                 "merge-left" in s || "bear-left" in s || "veer-left" in s ||
                     "slight-left" in s || "ramp-left" in s || "off-ramp-left" in s ||
                     "on-ramp-left" in s || "keep-left" in s || "stay-left" in s ||
@@ -66,6 +62,11 @@ enum class Maneuver {
                     "slight-right" in s || "ramp-right" in s || "off-ramp-right" in s ||
                     "on-ramp-right" in s || "keep-right" in s || "stay-right" in s ||
                     "stay-on-the-right" in s -> KEEP_RIGHT
+
+                "turn-left" in s || "make-a-left" in s || "take-a-left" in s ||
+                    "take-the-left" in s || "left-onto" in s -> LEFT
+                "turn-right" in s || "make-a-right" in s || "take-a-right" in s ||
+                    "take-the-right" in s || "right-onto" in s -> RIGHT
 
                 else -> STRAIGHT
             }
