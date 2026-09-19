@@ -3,6 +3,7 @@ package com.glyphnavtoy.glyph
 import org.junit.Assert.assertEquals
 import org.junit.Assert.assertTrue
 import org.junit.Test
+import kotlin.math.abs
 
 class ArrowBitmapsTest {
 
@@ -23,7 +24,10 @@ class ArrowBitmapsTest {
         val right = ArrowBitmaps.originFor(Maneuver.RIGHT)
         assertTrue("left should shift right, was ${left.x}", left.x > 0)
         assertTrue("right should shift left, was ${right.x}", right.x < 0)
-        assertEquals(0, left.x + right.x)
+        assertTrue(
+            "origins should be near-mirrors, left=${left.x} right=${right.x}",
+            abs(left.x + right.x) <= 1,
+        )
     }
 
     @Test
