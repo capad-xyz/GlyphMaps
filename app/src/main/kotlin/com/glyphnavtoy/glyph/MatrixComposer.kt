@@ -12,7 +12,8 @@ import com.glyphnavtoy.nav.NavState
  *
  * Layout:
  *  - Top half (rows 1-6): static maneuver arrow with built-in brightness
- *    gradient (head bright, trail dim) from [ArrowBitmaps].
+ *    gradient (head bright, trail dim) from [ArrowBitmaps], *centered* on
+ *    the matrix via [ArrowBitmaps.originFor].
  *  - Bottom half (rows 7-11): distance text marquee scrolls left→right,
  *    looping with a small visual gap. Swaps mid-scroll when the value
  *    changes.
@@ -54,13 +55,15 @@ object MatrixComposer {
         tail: Int = GlyphSettings.tailFor(state.maneuver),
     ): MatrixFrame {
         val frame = MatrixFrame()
+        val pattern = ArrowBitmaps.patternFor(state.maneuver)
+        val origin = ArrowBitmaps.originFor(pattern)
 
-        // Top half: arrow region.
+        // Top half: arrow region, bbox-centered on the matrix.
         when (mode) {
             AnimationMode.STATIC -> frame.stamp(
-                originX = 0,
-                originY = ArrowBitmaps.ARROW_ORIGIN_Y,
-                pattern = ArrowBitmaps.patternFor(state.maneuver),
+                originX = origin.x,
+                originY = origin.y,
+                pattern = pattern,
                 head = head,
                 tail = tail,
             )
@@ -68,15 +71,12 @@ object MatrixComposer {
                 val frames = ArrowSweep.framesFor(state.maneuver)
                 if (frames.isNotEmpty()) {
                     val idx = animationTick.mod(frames.size)
-                    // Sweep is derived from the static pattern: a settled frame
-                    // ≡ the static arrow, so STATIC and FLOWING always match.
                     ArrowSweep.stamp(frame, frames[idx], head, tail)
                 } else {
-                    // No sweep path (e.g. empty pattern) → fall back to static.
                     frame.stamp(
-                        originX = 0,
-                        originY = ArrowBitmaps.ARROW_ORIGIN_Y,
-                        pattern = ArrowBitmaps.patternFor(state.maneuver),
+                        originX = origin.x,
+                        originY = origin.y,
+                        pattern = pattern,
                         head = head,
                         tail = tail,
                     )
