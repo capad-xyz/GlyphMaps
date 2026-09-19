@@ -15,21 +15,20 @@ import android.util.Log
 import com.glyphnavtoy.capture.CaptureWriter
 import com.glyphnavtoy.glyph.Maneuver
 import com.glyphnavtoy.nav.LiveNavSnapshot
+import com.glyphnavtoy.nav.MapsNavParse
 import com.glyphnavtoy.nav.NavStateRepo
 import com.glyphnavtoy.nav.Speedometer
 import java.util.Locale
 
 /**
  * Listens for Google Maps Live Updates, forwards parsed nav state to
- * [GlyphRenderService], and **persists every captured notification to disk
- * via [CaptureWriter]** so we never lose data even when ADB isn't connected.
+ * [GlyphRenderService], and persists captured notifications via [CaptureWriter]
+ * in the dev flavor.
  *
  * Captured Android 16 ProgressStyle format (verified live):
- * ```
- *   android.title             = "60 m · Turn left onto ADM Rd"
- *   android.shortCriticalText = "60 m"
- *   android.template          = "android.app.Notification$ProgressStyle"
- * ```
+ *   android.title             = 60 m middot Turn left onto ADM Rd
+ *   android.shortCriticalText = 60 m
+ *   android.template          = android.app.Notification.ProgressStyle
  */
 class MapsNotificationListener : NotificationListenerService() {
 
@@ -38,7 +37,8 @@ class MapsNotificationListener : NotificationListenerService() {
     override fun onListenerConnected() {
         super.onListenerConnected()
         writer = if (com.glyphnavtoy.BuildConfig.IS_DEV) CaptureWriter(applicationContext) else null
-        Log.i(TAG, "Listener connected. Capture=${if (writer != null) "ON (dev)" else "OFF (user)"}")
+        val capture = if (writer != null) "ON (dev)" else "OFF (user)"
+        Log.i(TAG, "Listener connected. Capture=$capture")
         replayActiveMapsNotifications()
     }
 
@@ -51,7 +51,7 @@ class MapsNotificationListener : NotificationListenerService() {
         } ?: return
         var n = 0
         for (sbn in active) {
-            if (!isMapsPackage(sbn.packageName)) continue
+            if (!MapsNavParse.isMapsPackage(sbn.packageName)) continue
             n++
             onNotificationPosted(sbn)
         }
@@ -71,7 +71,7 @@ class MapsNotificationListener : NotificationListenerService() {
 
     override fun onNotificationPosted(sbn: StatusBarNotification?) {
         sbn ?: return
-        if (!isMapsPackage(sbn.packageName)) return
+        if (!MapsNavParse.isMapsPackage(sbn.packageName)) return
 
         val extras = sbn.notification.extras
         val title = extras.getCharSequence(EXTRA_TITLE)?.toString().orEmpty()
@@ -82,7 +82,9 @@ class MapsNotificationListener : NotificationListenerService() {
         if (com.glyphnavtoy.BuildConfig.IS_DEV) dumpRaw(sbn)
 
         if (!isNavNotification(sbn, title, text, shortCritical)) {
-            logBoth("Non-nav Maps notification (category=${sbn.notification.category ?: "null"} template=${extras.getString(EXTRA_TEMPLATE) ?: "none"}) — skipped")
+            val category = sbn.notification.category ?: "null"
+            val template = extras.getString(EXTRA_TEMPLATE) ?: "none"
+            logBoth("Non-nav Maps notification (category=$category template=$template) — skipped")
             return
         }
 
@@ -91,21 +93,23 @@ class MapsNotificationListener : NotificationListenerService() {
         when {
             headline.startsWith("Rerouting", ignoreCase = true) ||
                 (headline.contains("Rerouting", ignoreCase = true) && headline.length < 24) -> {
-                logBoth("Rerouting — skipped"); return
+                logBoth("Rerouting — skipped")
+                return
             }
             headline.startsWith("Starting navigation", ignoreCase = true) -> {
-                logBoth("Starting navigation — skipped"); return
+                logBoth("Starting navigation — skipped")
+                return
             }
             headline.startsWith("How was", ignoreCase = true) -> {
-                logBoth("Post-trip survey — skipped"); return
+                logBoth("Post-trip survey — skipped")
+                return
             }
         }
 
-        val distanceM = parseDistanceMeters(shortCritical)
-            ?: parseDistanceFromTitlePrefix(headline)
-            ?: parseDistanceMeters(text)
-        val maneuverText = stripDistancePrefix(headline).ifBlank { stripDistancePrefix(text) }
-        val rawManeuver = Maneuver.fromMapsString(normalizeForLookup(maneuverText))
+        val distanceM = MapsNavParse.resolveDistance(shortCritical, headline, text)
+        val maneuverText = MapsNavParse.stripDistancePrefix(headline)
+            .ifBlank { MapsNavParse.stripDistancePrefix(text) }
+        val rawManeuver = Maneuver.fromMapsString(MapsNavParse.normalizeForLookup(maneuverText))
 
         val progress = extras.takeIf { it.containsKey(EXTRA_PROGRESS) }?.getInt(EXTRA_PROGRESS)
         Speedometer.observe(progress)
@@ -120,10 +124,12 @@ class MapsNotificationListener : NotificationListenerService() {
         }
 
         val morphTag = if (maneuver != rawManeuver) " (morphed from $rawManeuver)" else ""
+        val crit = shortCritical ?: ""
+        val distLabel = distanceM?.toString() ?: "(none)"
         logBoth(
-            "title=\"$title\" shortCritical=\"${shortCritical ?: "\"\"}\"  " +
-                "→ maneuver=$maneuver$morphTag  distance=${distanceM ?: "(none)"}m  " +
-                "speed=${Speedometer.speedKmhString()}  morphAt=${threshold}m"
+            "title=$title shortCritical=$crit " +
+                "maneuver=$maneuver$morphTag distance=${distLabel}m " +
+                "speed=${Speedometer.speedKmhString()} morphAt=${threshold}m"
         )
 
         forwardToRenderService(maneuver, distanceM)
@@ -197,7 +203,7 @@ class MapsNotificationListener : NotificationListenerService() {
                 if (segs is ArrayList<*>) {
                     val arr = org.json.JSONArray()
                     segs.forEach { seg ->
-                        if (seg is android.os.Bundle) {
+                        if (seg is Bundle) {
                             arr.put(org.json.JSONObject().apply {
                                 put("length", seg.getInt("length"))
                                 put("colorInt", seg.getInt("colorInt"))
@@ -214,14 +220,14 @@ class MapsNotificationListener : NotificationListenerService() {
         try {
             val iconBitmap = extractLargeIcon(extras)
             if (iconBitmap != null) {
-                w.saveIconIfNew(iconBitmap, stripDistancePrefix(title))
+                w.saveIconIfNew(iconBitmap, MapsNavParse.stripDistancePrefix(title))
             }
         } catch (t: Throwable) {
             Log.w(TAG, "icon extract failed", t)
         }
     }
 
-    private fun extractLargeIcon(extras: android.os.Bundle): android.graphics.Bitmap? {
+    private fun extractLargeIcon(extras: Bundle): android.graphics.Bitmap? {
         val icon = if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
             extras.getParcelable("android.largeIcon", android.graphics.drawable.Icon::class.java)
         } else {
@@ -244,7 +250,7 @@ class MapsNotificationListener : NotificationListenerService() {
 
     override fun onNotificationRemoved(sbn: StatusBarNotification?) {
         sbn ?: return
-        if (!isMapsPackage(sbn.packageName)) return
+        if (!MapsNavParse.isMapsPackage(sbn.packageName)) return
         val extras = sbn.notification.extras
         val title = extras.getCharSequence(EXTRA_TITLE)?.toString().orEmpty()
         val text = extras.getCharSequence(EXTRA_TEXT)?.toString().orEmpty()
@@ -255,9 +261,6 @@ class MapsNotificationListener : NotificationListenerService() {
         NavStateRepo.clear()
         Speedometer.reset()
     }
-
-    private fun isMapsPackage(packageName: String?): Boolean =
-        packageName != null && packageName in MAPS_PACKAGES
 
     private fun isNavNotification(
         sbn: StatusBarNotification,
@@ -274,45 +277,8 @@ class MapsNotificationListener : NotificationListenerService() {
         if (template.contains("ProgressStyle") && ongoing) return true
         if (ongoing && !shortCritical.isNullOrBlank()) return true
         val blob = "$title $text".lowercase()
-        return ongoing && NAV_HINTS.any { it in blob }
+        return ongoing && NAV_HINTS.any { hint -> hint in blob }
     }
-
-    private fun parseDistanceMeters(s: String?): Int? {
-        if (s.isNullOrBlank()) return null
-        val normalized = s.replace('\u00a0', ' ').replace('\u202f', ' ').replace(',', '.')
-        val m = DISTANCE_REGEX.find(normalized) ?: return null
-        val value = m.groupValues[1].toDoubleOrNull() ?: return null
-        return when (m.groupValues[2].lowercase()) {
-            "m", "meter", "meters", "metre", "metres", "mtr", "mtrs" -> value.toInt()
-            "km", "kilometer", "kilometers", "kilometre", "kilometres" -> (value * 1000).toInt()
-            "ft", "feet" -> (value * 0.3048).toInt()
-            "yd", "yds", "yard", "yards" -> (value * 0.9144).toInt()
-            "mi", "mile", "miles" -> (value * 1609.34).toInt()
-            else -> null
-        }
-    }
-
-    private fun parseDistanceFromTitlePrefix(title: String): Int? {
-        val before = TITLE_SPLIT.split(title, limit = 2).firstOrNull() ?: return null
-        if (before == title) return parseDistanceMeters(title)
-        return parseDistanceMeters(before)
-    }
-
-    private fun stripDistancePrefix(title: String): String {
-        val parts = TITLE_SPLIT.split(title, limit = 2)
-        return if (parts.size == 2 && parseDistanceMeters(parts[0]) != null) {
-            parts[1].trim()
-        } else {
-            title.trim()
-        }
-    }
-
-    private fun normalizeForLookup(text: String): String =
-        text.lowercase()
-            .replace('\u00a0', ' ')
-            .replace(Regex("[\u2013\u2014\u2212]"), "-")
-            .replace(Regex("[^a-z0-9]+"), "-")
-            .trim('-')
 
     private fun extractStreetName(phrase: String): String? {
         val markers = listOf(" onto ", " to stay on ", " toward ", " on ")
@@ -337,7 +303,7 @@ class MapsNotificationListener : NotificationListenerService() {
         sb.appendLine("  extras")
         dumpBundle(n.extras, indent = "    ", out = sb)
         n.actions?.forEachIndexed { i, a ->
-            sb.appendLine("  action[$i] title=\"${a.title}\"  semantic=${a.semanticAction}")
+            sb.appendLine("  action[$i] title=${a.title}  semantic=${a.semanticAction}")
         }
         sb.toString().lineSequence().forEach { line ->
             if (line.isNotEmpty()) Log.v(DUMP_TAG, line)
@@ -355,7 +321,7 @@ class MapsNotificationListener : NotificationListenerService() {
                     out.appendLine("$indent$key (Bundle)")
                     dumpBundle(value, "$indent  ", out)
                 }
-                is CharSequence -> out.appendLine("$indent$key ($typeName) = \"$value\"")
+                is CharSequence -> out.appendLine("$indent$key ($typeName) = $value")
                 is ArrayList<*> -> {
                     out.appendLine("$indent$key (ArrayList, size=${value.size})")
                     value.forEachIndexed { i, item ->
@@ -401,10 +367,6 @@ class MapsNotificationListener : NotificationListenerService() {
     companion object {
         private const val TAG = "MapsNotifListener"
         private const val DUMP_TAG = "MapsNotifDump"
-        private val MAPS_PACKAGES = setOf(
-            "com.google.android.apps.maps",
-            "com.google.android.apps.mapslite",
-        )
         private const val EXTRA_TITLE = "android.title"
         private const val EXTRA_TEXT = "android.text"
         private const val EXTRA_SHORT_CRITICAL = "android.shortCriticalText"
@@ -412,11 +374,6 @@ class MapsNotificationListener : NotificationListenerService() {
         private const val EXTRA_PROGRESS = "android.progress"
         private const val EXTRA_PROGRESS_MAX = "android.progressMax"
         private const val EXTRA_TEMPLATE = "android.template"
-        private val DISTANCE_REGEX = Regex(
-            """(\d+(?:\.\d+)?)\s*(kilometres?|kilometers?|km|miles?|mi|metres?|meters?|mtrs?|yards?|yds?|yd|feet|ft|m)\b""",
-            RegexOption.IGNORE_CASE,
-        )
-        private val TITLE_SPLIT = Regex("""\\s*[·•\u2013\u2014|:]+\\s+""")
         private val NAV_HINTS = listOf(
             "turn ", "keep ", "head ", "exit", "arrive", "arriving",
             "roundabout", "continue ", "merge", "destination", "u-turn",
