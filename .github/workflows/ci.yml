@@ -1,0 +1,54 @@
+name: CI
+
+on:
+  push:
+    branches: [main, master, "fix/**"]
+  pull_request:
+
+jobs:
+  unit-tests:
+    runs-on: ubuntu-latest
+    timeout-minutes: 30
+    env:
+      ANDROID_HOME: /usr/local/lib/android/sdk
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-java@v4
+        with:
+          distribution: temurin
+          java-version: "17"
+          cache: gradle
+
+      - name: Install Android platform 35
+        run: |
+          set -euo pipefail
+          SDK="${ANDROID_HOME}"
+          SM=""
+          for cand in \
+            "$SDK/cmdline-tools/latest/bin/sdkmanager" \
+            "$SDK/cmdline-tools/16.0/bin/sdkmanager" \
+            "$SDK/cmdline-tools/bin/sdkmanager"; do
+            if [ -x "$cand" ]; then SM="$cand"; break; fi
+          done
+          if [ -z "$SM" ]; then
+            echo "sdkmanager not found under $SDK" >&2
+            ls -la "$SDK/cmdline-tools" || true
+            exit 1
+          fi
+          yes | "$SM" --licenses >/dev/null || true
+          "$SM" --install "platforms;android-35" "build-tools;35.0.0"
+          echo "sdk.dir=$SDK" > local.properties
+
+      - name: Unit tests
+        run: |
+          chmod +x gradlew
+          ./gradlew :app:testUserDebugUnitTest --stacktrace --no-daemon
+
+      - name: Upload reports
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: unit-test-reports
+          path: app/build/reports/tests/
+          if-no-files-found: ignore

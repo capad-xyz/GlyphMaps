@@ -6,6 +6,7 @@
 package com.glyphnavtoy.nav
 
 import com.glyphnavtoy.glyph.Maneuver
+import java.util.Locale
 
 /**
  * Snapshot of "what should the matrix show right now."
@@ -32,7 +33,7 @@ data class NavState(
         val m = distanceMeters ?: return null
         return when {
             m < 1000 -> "${m}m"
-            m < 10000 -> "%.1fk".format(m / 1000.0)
+            m < 10000 -> String.format(Locale.US, "%.1fk", m / 1000.0)
             else -> "${m / 1000}k"
         }
     }

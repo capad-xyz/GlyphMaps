@@ -7,9 +7,6 @@ plugins {
     alias(libs.plugins.kotlin.compose)
 }
 
-// Release signing reads from keystore.properties at the repo root (gitignored,
-// never committed). When the file is absent (fresh clone / CI without secrets)
-// the release build falls back to the debug key so it still assembles.
 val keystorePropsFile = rootProject.file("keystore.properties")
 val keystoreProps = Properties().apply {
     if (keystorePropsFile.exists()) FileInputStream(keystorePropsFile).use { load(it) }
@@ -25,6 +22,7 @@ android {
         targetSdk = 35
         versionCode = 1
         versionName = "1.0.0"
+        testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
     }
 
     signingConfigs {
@@ -46,8 +44,6 @@ android {
                 getDefaultProguardFile("proguard-android-optimize.txt"),
                 "proguard-rules.pro"
             )
-            // Real upload key when keystore.properties is present; otherwise the
-            // debug key (lets the release variant assemble without secrets).
             signingConfig = if (keystorePropsFile.exists()) {
                 signingConfigs.getByName("release")
             } else {
@@ -56,25 +52,18 @@ android {
         }
     }
 
-    // Two flavors, installable side by side:
-    //   user → the clean product (no dev tools, no on-disk capture logging)
-    //   dev  → everything: dev screen, route simulator, capture logging
-    // BuildConfig.IS_DEV gates the difference in code; the .dev applicationId
-    // suffix lets both live on the phone at once.
     flavorDimensions += "tier"
     productFlavors {
         create("user") {
             dimension = "tier"
             isDefault = true
             buildConfigField("boolean", "IS_DEV", "false")
-            // app_name comes from src/main → "GlyphMaps"
         }
         create("dev") {
             dimension = "tier"
             applicationIdSuffix = ".dev"
             versionNameSuffix = "-dev"
             buildConfigField("boolean", "IS_DEV", "true")
-            // app_name overridden in src/dev → "GlyphMaps Dev"
         }
     }
 
@@ -90,6 +79,11 @@ android {
         buildConfig = true
     }
     sourceSets["main"].kotlin.srcDirs("src/main/kotlin")
+    sourceSets["test"].kotlin.srcDirs("src/test/kotlin")
+
+    testOptions {
+        unitTests.isReturnDefaultValues = true
+    }
 }
 
 dependencies {
@@ -106,4 +100,5 @@ dependencies {
     implementation(libs.androidx.fragment.ktx)
     implementation(files("libs/glyph-matrix-sdk-2.0.aar"))
     debugImplementation(libs.androidx.ui.tooling)
+    testImplementation(libs.junit)
 }

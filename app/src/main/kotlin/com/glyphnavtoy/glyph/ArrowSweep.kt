@@ -69,6 +69,7 @@ object ArrowSweep {
 
     private fun build(maneuver: Maneuver): List<Map<Pixel, SweepPx>> {
         val pattern = ArrowBitmaps.patternFor(maneuver)
+        val origin = ArrowBitmaps.originFor(pattern)
         val roleOf = HashMap<Pixel, Role>()
         for ((dy, row) in pattern.withIndex()) {
             for ((dx, ch) in row.withIndex()) {
@@ -77,7 +78,7 @@ object ArrowSweep {
                     'o', '+', ':' -> Role.TAIL
                     else -> null
                 } ?: continue
-                roleOf[Pixel(dx, dy + ArrowBitmaps.ARROW_ORIGIN_Y)] = role
+                roleOf[Pixel(dx + origin.x, dy + origin.y)] = role
             }
         }
         if (roleOf.isEmpty()) return emptyList()
@@ -86,10 +87,8 @@ object ArrowSweep {
         val loopLen = seq.size + REST_FRAMES
 
         return (0 until loopLen).map { t ->
-            // Base: the whole static shape, settled.
             val f = HashMap<Pixel, SweepPx>(roleOf.size)
             for ((p, role) in roleOf) f[p] = SweepPx(role, 0f)
-            // Comet: lead at seq[t], fading tail behind it. Silent during rest.
             for ((k, g) in COMET.withIndex()) {
                 val idx = t - k
                 val p = seq.getOrNull(idx) ?: continue
@@ -106,7 +105,6 @@ object ArrowSweep {
         val tails = roleOf.filterValues { it == Role.TAIL }.keys.toList()
 
         if (heads.isEmpty()) {
-            // All-tail pattern (rare) — just walk it from one extreme.
             if (tails.isEmpty()) return emptyList()
             return nearestNeighbourWalk(tails, farthestFrom(tails, centroid(tails)))
         }
@@ -116,7 +114,6 @@ object ArrowSweep {
             val origin = farthestFrom(tails, headCentroid)
             seq.addAll(nearestNeighbourWalk(tails, origin))
         }
-        // Reveal the head outward from where the trail ended toward the tip.
         val from = seq.lastOrNull() ?: farthestFrom(heads, headCentroid)
         seq.addAll(heads.sortedBy { dist2(it, from) })
         return seq
